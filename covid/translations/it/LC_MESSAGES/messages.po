@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-04-21 23:47+0200\n"
-"PO-Revision-Date: 2020-04-21 23:48+0200\n"
+"POT-Creation-Date: 2020-04-22 19:51+0200\n"
+"PO-Revision-Date: 2020-04-22 19:54+0200\n"
 "Last-Translator: \n"
 "Language: it\n"
 "Language-Team: it <LL@li.org>\n"
@@ -38,15 +38,15 @@ msgstr "Nazioni"
 msgid "plot"
 msgstr "disegna"
 
-#: covid/routes.py:76
+#: covid/routes.py:78
 msgid "Covid: time trend analysis"
 msgstr "Covid: analisi delle tendenze temporali"
 
-#: covid/routes.py:97 covid/templates/select.html:8
+#: covid/routes.py:98 covid/templates/select.html:8
 msgid "Select country"
 msgstr "Seleziona la nazione"
 
-#: covid/routes.py:157
+#: covid/routes.py:159
 msgid "overlap"
 msgstr "sovrapporre"
 
@@ -54,19 +54,19 @@ msgstr "sovrapporre"
 msgid "Analizing data about Covid-19"
 msgstr "Analizzare i dati su Covid-19"
 
-#: covid/templates/footer.html:10
-msgid "A section powered by"
-msgstr "Una sezione implementata con"
+#: covid/templates/footer.html:11
+msgid "A web site section"
+msgstr "Sezione di un sito web"
 
 #: covid/templates/footer.html:12
-msgid "using"
-msgstr "usando"
+msgid "powered by"
+msgstr "che utilizza"
 
-#: covid/templates/footer.html:14
+#: covid/templates/footer.html:15
 msgid "and"
 msgstr "e"
 
-#: covid/templates/footer.html:18
+#: covid/templates/footer.html:19
 msgid "Under a"
 msgstr "Secondo una"
 
@@ -238,55 +238,3 @@ msgid ""
 msgstr ""
 "o nazioni. Per selezionare più nazioni, tieni premuto il tasto Ctrl mentre fai "
 "Click sulle nazioni scelte"
-
-#~ msgid "select from user: %(id)"
-#~ msgstr "selezionato dall'utente: %(id)"
-
-#~ msgid ""
-#~ "To do so, lines are aligned each other on the day where they exceed a "
-#~ "treshold of"
-#~ msgstr ""
-#~ "Per farlo, le linee sono allineate l'un l'altra in base al giorno in cui "
-#~ "superano una soglia di"
-
-#~ msgid "Country"
-#~ msgstr "Nazione"
-
-#~ msgid "A"
-#~ msgstr "Un"
-
-#~ msgid "site"
-#~ msgstr "sito"
-
-#~ msgid "powered by"
-#~ msgstr "realizzato con"
-
-#~ msgid "It is based"
-#~ msgstr "È basata"
-
-#~ msgid "on data"
-#~ msgstr "su dati"
-
-#~ msgid ""
-#~ "This European Agency every day updates data about the spread of\n"
-#~ "            Covid-19 disease in all the world"
-#~ msgstr ""
-#~ "Questa agenzia europea aggiorna quotidianamente i dati riguardo la "
-#~ "diffusione del Covid-19 in tutto il mondo"
-
-#~ msgid ""
-#~ "up to ten nations to compare their time trend\n"
-#~ "            of total cases of positive infection to the viruses"
-#~ msgstr ""
-#~ "fino a dieci nazioni per comparare l'andamento temporale dei loro casi "
-#~ "totali positivi al virus"
-
-#~ msgid "Section home"
-#~ msgstr "Home di sezione"
-
-#~ msgid ""
-#~ "This site is updated at 13:15 CET (or CEST, when daylight saving time is in "
-#~ "charge)"
-#~ msgstr ""
-#~ "Questo sito si aggiorna alle 13:15 CET (o CEST, quando è in corso l'ora "
-#~ "legale)"
