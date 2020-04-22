@@ -10,7 +10,7 @@ In cmd::
 
   cd flask_covid
   python -m venv venv
-  venv\Scripts\activate   # or venv/bin/activate in Linux
+  venv\Scripts\activate   # or venv/bin/activate on Linux
   pip install -r requirements.txt
   
 Exec
@@ -19,7 +19,7 @@ Exec
 In cmd::
 
   cd flask_covid
-  venv\Scripts\activate # or venv/bin/activate in Linux
+  venv\Scripts\activate   # or venv/bin/activate on Linux
   flask run
   
 please, use a web browser to show http://localhost:5000
