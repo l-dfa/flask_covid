@@ -1,0 +1,24 @@
+    <!--        FOOTER        -->
+    <footer>
+        <!--<div class="continer" style="border: 2px solid green;"> -->
+        <div class="container" style="font-size:x-small;font-style:italic;">
+            <hr class="soiola">
+            {% if config.SITE.WSUBTITLE %}
+            <div> <p> {{ config.SITE.WSUBTITLE }} </p> </div>
+            {% endif %}
+            <div class="container-fluid hidden-xs" style="padding:0;">
+                <p >{{ _('A section powered by') }} 
+                    <a href="https://palletsprojects.com/p/flask/" target="_blank">Flask</a>,
+                    &nbsp;{{ _('using') }}:
+                    <a href="https://www.python.org/" target="_blank">Python</a>,
+                    <a href="https://pandas.pydata.org/" target="_blank">Pandas</a> {{ _('and') }}
+                    <a href="https://matplotlib.org/" target="_blank">Matplotlib</a>
+                    {% if config.SITE.WLICENSE %}
+                        <span style="float:right;">
+                        {{ _('Under a') }} <a rel="license" href="{{ config.SITE.WLICENSEREF }}" target="_blank">{{ config.SITE.WLICENSE }}</a>.
+                        </span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </footer>

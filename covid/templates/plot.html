@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container" style="background-color:WhiteSmoke;overflow-y:auto;">
+        {% if img_data %}
+            <div>
+            <h3>{{ _('Time trend of total positive cases of Covid-19') }}</h3>
+                {% if countries %}
+                <p> {{ _('about these nations') }}:</p>
+                <ul>
+                {%for country in countries %}
+                    <li>{{ country }}</li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+            <div>
+            {% if overlap %}
+            <div>
+                <p>{{ _('Beware of fact the below image overlap the lines of the different nations') }}. </p>
+                <p>{{ _('To do so, lines are translated each other by the day where they exceed a treshold of') }}
+                   {{ threshold }} {{ _('positive cases in a couple of adjacent days') }}. </p>
+                <p>{{ _('If you wish, you can') }}, <a href="{{ url_for('draw_graph', ids=ids) }}">{{ _('go back to the normal view') }}</a>. </p>
+            </div>
+            {% elif countries|count > 1 %}
+            <div>
+                <p>{{ _('If you wish') }}, <a href="{{ url_for('draw_overlap', ids=ids) }}">{{ _('you could overlap') }}</a> {{ _('the lines of these nations') }}. </p>
+            {% endif %}
+            {{ img_data|safe }}
+            </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

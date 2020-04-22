@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+        <div class="container" style="background-color:WhiteSmoke;overflow-y:auto;">
+                <form action="" method="post" novalidate>
+                    {{ form.hidden_tag() }}
+                    <h3>{{ _('Select country') }}...</h3>
+                    <p>... {{ _('or countries. To select more nations, hold the Ctrl key while click on the chosen nations')}}.</p>
+                    <p>
+                        <!--  \{\{ form.countries.label \}\}<br> -->
+                        {{ form.countries(size=22) }}<br>
+                        {% for error in form.countries.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </p>
+                    <p>{{ form.submit() }}</p>
+                </form>
+
+        </div>
+
+
+{% endblock %}

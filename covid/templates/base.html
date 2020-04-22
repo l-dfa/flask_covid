@@ -1,0 +1,57 @@
+<html lang="en">
+    <head>
+        {% if title %}
+            <title>{{ title }}</title>
+        {% else %}
+            <title>ldfa | {{ _('Analizing data about Covid-19') }}</title>
+        {% endif %}
+        
+        <meta http-equiv="content-language” content=”en”>
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- warning: use 'url_for' to get static resources, otherwise it could fail on some template(s) -->
+        <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <link rel="icon" type="static/images/ico" href="{{ url_for('static', filename='images/favicon.ico') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/pygments.css') }}">
+        
+        {% block link %}
+        {% endblock %}
+    </head>
+    <body>
+        <header>
+            <!--<div class="container" style="border: 2px solid blue;">-->
+            <div class="container">
+                <!--<div class="navbar row">-->
+                {% include "navbar.html" %}
+            </div>
+        </header>
+        
+        
+        <!-- if messages, hereafter a division to show them -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="container" style="background-color:WhiteSmoke;overflow-y:auto;">
+        <ul class="list-unstyled">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- principal block content -->
+        {% block content %}{% endblock %}
+
+        <!-- footer -->
+        {% include "footer.html" %}
+
+        
+        <!-- Core SCRIPTS - Include with every page -->
+        {% block javascript %}
+        {% endblock %}
+    </body>
+</html>

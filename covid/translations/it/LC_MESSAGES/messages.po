@@ -1,0 +1,292 @@
+# Italian translations for PROJECT.
+# Copyright (C) 2020 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-04-21 23:47+0200\n"
+"PO-Revision-Date: 2020-04-21 23:48+0200\n"
+"Last-Translator: \n"
+"Language: it\n"
+"Language-Team: it <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+"X-Generator: Poedit 2.3\n"
+
+#: config.py:15
+msgid ""
+"When the archer misses the center of the target, he turns round and seeks for "
+"the cause of his failure in himself (Confucius)"
+msgstr ""
+"Quando l'arciere manca il bersaglio, cerca la causa in se stesso (Confucio)"
+
+#: config.py:16
+msgid "CC BY-SA 4.0 license"
+msgstr "licenza CC BY-SA 4.0"
+
+#: covid/forms.py:8
+msgid "Countries"
+msgstr "Nazioni"
+
+#: covid/forms.py:9 covid/routes.py:126
+msgid "plot"
+msgstr "disegna"
+
+#: covid/routes.py:76
+msgid "Covid: time trend analysis"
+msgstr "Covid: analisi delle tendenze temporali"
+
+#: covid/routes.py:97 covid/templates/select.html:8
+msgid "Select country"
+msgstr "Seleziona la nazione"
+
+#: covid/routes.py:157
+msgid "overlap"
+msgstr "sovrapporre"
+
+#: covid/templates/base.html:6
+msgid "Analizing data about Covid-19"
+msgstr "Analizzare i dati su Covid-19"
+
+#: covid/templates/footer.html:10
+msgid "A section powered by"
+msgstr "Una sezione implementata con"
+
+#: covid/templates/footer.html:12
+msgid "using"
+msgstr "usando"
+
+#: covid/templates/footer.html:14
+msgid "and"
+msgstr "e"
+
+#: covid/templates/footer.html:18
+msgid "Under a"
+msgstr "Secondo una"
+
+#: covid/templates/index.html:6
+msgid "Time trend analysis of Covid-19 outbreak"
+msgstr "Analisi temporale della epidemia di Covid-19"
+
+#: covid/templates/index.html:9
+msgid ""
+"This site section is to show the time trend of Covid-19\n"
+"            outbreak"
+msgstr ""
+"Questa sezione del sito mostra l'andamento temporale della epidemia di Covid-19"
+
+#: covid/templates/index.html:13
+msgid "Here you"
+msgstr "Qui"
+
+#: covid/templates/index.html:13
+msgid "can select"
+msgstr "puoi selezionare"
+
+#: covid/templates/index.html:13
+msgid ""
+"one or more nations to compare their time trend\n"
+"            of total cases of positive infection to the viruses. Please do not "
+"select too many nations, or the graph will be unreadable"
+msgstr ""
+"una o più nazioni per comparare i loro andamenti temporali dei totali dei casi "
+"positivi all'infezione virale. Non selezionare troppi paesi, o il grafico sarà "
+"illeggibile"
+
+#: covid/templates/index.html:18
+msgid "Data available range from"
+msgstr "I dati disponibili spaziano dal"
+
+#: covid/templates/index.html:18
+msgid "to"
+msgstr "al"
+
+#: covid/templates/index.html:18
+msgid "and regard"
+msgstr "e riguardano"
+
+#: covid/templates/index.html:18
+msgid "between countries and territories"
+msgstr "tra nazioni e territori"
+
+#: covid/templates/index.html:21
+msgid "Reference"
+msgstr "Riderimenti"
+
+#: covid/templates/index.html:24
+msgid "This site uses"
+msgstr "Questo sito usa"
+
+#: covid/templates/index.html:25
+msgid "data"
+msgstr "dati"
+
+#: covid/templates/index.html:26
+msgid "published by"
+msgstr "pubblicati dal"
+
+#: covid/templates/index.html:27
+msgid "European Centre for Disease Prevention and Control"
+msgstr "Centro Europeo per la Prevenzione e il controllo delle Malattie"
+
+#: covid/templates/index.html:29
+msgid ""
+"This Agency every day at noon updates data about the spread of\n"
+"                Covid-19 disease in all the world"
+msgstr ""
+"Questa agenzia aggiorna quotidianamente a mezzogiorno i dati riguardanti la "
+"diffusione dell'infezione di Covid-19 in tutto il mondo"
+
+#: covid/templates/index.html:31
+msgid ""
+"Therefore this site is updated at 13:15 CET (or CEST, when daylight saving time "
+"is in charge)"
+msgstr ""
+"Perciò questo sito è aggiornato alle 13:15 CET (o CEST, quando è in corso l'ora "
+"legale)"
+
+#: covid/templates/index.html:35
+msgid "Goodbye"
+msgstr "Arrivederci"
+
+#: covid/templates/index.html:37
+msgid "Thank you to visit this site"
+msgstr "Grazie per avere visitato questo sito"
+
+#: covid/templates/index.html:38
+msgid "Just in case you have nothing more interesting to do, here you can"
+msgstr "Se non hai nulla di più interessante da fare, qui puoi"
+
+#: covid/templates/index.html:38
+msgid "read my blog"
+msgstr "leggere il mio blog"
+
+#: covid/templates/index.html:42
+msgid "Cheers"
+msgstr "Saluti"
+
+#: covid/templates/navbar.html:16
+msgid "Covid Section"
+msgstr "Sezione Covid"
+
+#: covid/templates/navbar.html:18
+msgid "Select"
+msgstr "Seleziona"
+
+#: covid/templates/navbar.html:20
+msgid "Plot"
+msgstr "Disegna"
+
+#: covid/templates/navbar.html:21 covid/templates/navbar.html:22
+msgid "Overlap"
+msgstr "Sovrapponi"
+
+#: covid/templates/plot.html:8
+msgid "Time trend of total positive cases of Covid-19"
+msgstr "Andamento temporale dei casi positivi totali di Covid-19"
+
+#: covid/templates/plot.html:10
+msgid "about these nations"
+msgstr "riguardo queste nazioni"
+
+#: covid/templates/plot.html:20
+msgid "Beware of fact the below image overlap the lines of the different nations"
+msgstr ""
+"Attenzione al fatto che l'immagine seguente sovrappone le linee di nazioni "
+"differenti"
+
+#: covid/templates/plot.html:21
+msgid ""
+"To do so, lines are translated each other by the day where they exceed a "
+"treshold of"
+msgstr "Per farlo, le linee sono traslate al giorno in cui eccedono una soglia di"
+
+#: covid/templates/plot.html:22
+msgid "positive cases in a couple of adjacent days"
+msgstr "casi positivi in una coppia di giorni adiacenti"
+
+#: covid/templates/plot.html:23
+msgid "If you wish, you can"
+msgstr "Se lo desideri, puoi"
+
+#: covid/templates/plot.html:23
+msgid "go back to the normal view"
+msgstr "tornare alla vista normale"
+
+#: covid/templates/plot.html:27
+msgid "If you wish"
+msgstr "Se lo desideri"
+
+#: covid/templates/plot.html:27
+msgid "you could overlap"
+msgstr "puoi sovrapporre"
+
+#: covid/templates/plot.html:27
+msgid "the lines of these nations"
+msgstr "le linee di queste nazioni"
+
+#: covid/templates/select.html:9
+msgid ""
+"or countries. To select more nations, hold the Ctrl key while click on the "
+"chosen nations"
+msgstr ""
+"o nazioni. Per selezionare più nazioni, tieni premuto il tasto Ctrl mentre fai "
+"Click sulle nazioni scelte"
+
+#~ msgid "select from user: %(id)"
+#~ msgstr "selezionato dall'utente: %(id)"
+
+#~ msgid ""
+#~ "To do so, lines are aligned each other on the day where they exceed a "
+#~ "treshold of"
+#~ msgstr ""
+#~ "Per farlo, le linee sono allineate l'un l'altra in base al giorno in cui "
+#~ "superano una soglia di"
+
+#~ msgid "Country"
+#~ msgstr "Nazione"
+
+#~ msgid "A"
+#~ msgstr "Un"
+
+#~ msgid "site"
+#~ msgstr "sito"
+
+#~ msgid "powered by"
+#~ msgstr "realizzato con"
+
+#~ msgid "It is based"
+#~ msgstr "È basata"
+
+#~ msgid "on data"
+#~ msgstr "su dati"
+
+#~ msgid ""
+#~ "This European Agency every day updates data about the spread of\n"
+#~ "            Covid-19 disease in all the world"
+#~ msgstr ""
+#~ "Questa agenzia europea aggiorna quotidianamente i dati riguardo la "
+#~ "diffusione del Covid-19 in tutto il mondo"
+
+#~ msgid ""
+#~ "up to ten nations to compare their time trend\n"
+#~ "            of total cases of positive infection to the viruses"
+#~ msgstr ""
+#~ "fino a dieci nazioni per comparare l'andamento temporale dei loro casi "
+#~ "totali positivi al virus"
+
+#~ msgid "Section home"
+#~ msgstr "Home di sezione"
+
+#~ msgid ""
+#~ "This site is updated at 13:15 CET (or CEST, when daylight saving time is in "
+#~ "charge)"
+#~ msgstr ""
+#~ "Questo sito si aggiorna alle 13:15 CET (o CEST, quando è in corso l'ora "
+#~ "legale)"

@@ -1,0 +1,6 @@
+__pycache__
+venv
+doc
+config_server
+*.mo
+*.pyc

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container" style="background-color:WhiteSmoke;overflow-y:auto;">
+        <h3>{{ _('Time trend analysis of Covid-19 outbreak') }}</h3>
+        <div>
+            <p>
+            {{ _('This site section is to show the time trend of Covid-19
+            outbreak') }}.</p>
+            
+            <p>
+            {{ _('Here you') }} <a href="{{ url_for('select') }}">{{ _('can select') }}</a> {{ _('one or more nations to compare their time trend
+            of total cases of positive infection to the viruses. Please do not select too many nations, or the graph will be unreadable') }}.
+            </p>
+
+            <p>
+            {{ _('Data available range from') }} {{ FIRST }} {{ _('to') }} {{ LAST }} {{ _('and regard') }} {{ HOW_MANY}} {{ _('between countries and territories')}}.
+            </p>
+
+            <h4>{{ _('Reference') }}</h4>
+            <div>
+                <p>
+                {{ _('This site uses') }} 
+                <a href="https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide">{{ _('data') }}</a>
+                {{ _('published by') }}
+                <a href="https://www.ecdc.europa.eu/en">{{ _('European Centre for Disease Prevention and Control') }}</a>.
+                
+                {{ _('This Agency every day at noon updates data about the spread of
+                Covid-19 disease in all the world') }}.
+                {{ _('Therefore this site is updated at 13:15 CET (or CEST, when daylight saving time is in charge)') }}. 
+                </p>
+            </div>   
+                
+            <h4>{{ _('Goodbye') }}</h4>
+            <div>
+                <p>{{ _('Thank you to visit this site') }}. 
+                {{ _('Just in case you have nothing more interesting to do, here you can') }} <a href="{{ url_for('select') }}">{{ _('read my blog') }}</a>. 
+                </p>
+                
+                <p>
+                {{ _('Cheers') }}.
+                </p>
+            </div>
+        </div>
+        
+    </div>
+{% endblock %}
