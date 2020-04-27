@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-04-27 20:10+0200\n"
-"PO-Revision-Date: 2020-04-27 20:20+0200\n"
+"POT-Creation-Date: 2020-04-28 00:12+0200\n"
+"PO-Revision-Date: 2020-04-28 00:13+0200\n"
 "Last-Translator: \n"
 "Language: it\n"
 "Language-Team: it <LL@li.org>\n"
@@ -125,15 +125,15 @@ msgstr "Analizzare i dati su Covid-19"
 msgid "A web site section"
 msgstr "Sezione di un sito web"
 
-#: covid/templates/footer.html:12
+#: covid/templates/footer.html:13
 msgid "powered by"
 msgstr "che utilizza"
 
-#: covid/templates/footer.html:15
+#: covid/templates/footer.html:16
 msgid "and"
 msgstr "e"
 
-#: covid/templates/footer.html:19
+#: covid/templates/footer.html:20
 msgid "Under a"
 msgstr "Secondo una"
 
@@ -234,7 +234,15 @@ msgstr "Se non hai nulla di più interessante da fare, qui puoi"
 msgid "read my blog"
 msgstr "leggere il mio blog"
 
-#: covid/templates/index.html:42
+#: covid/templates/index.html:39
+msgid ""
+"Most of the articles are in Italian language, some of them are translated in "
+"English language"
+msgstr ""
+"La maggior parte degli articoli sono in italiano, alcuni sono tradotti in "
+"inglese"
+
+#: covid/templates/index.html:43
 msgid "Cheers"
 msgstr "Saluti"
 
