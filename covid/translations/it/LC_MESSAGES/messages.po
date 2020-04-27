@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-04-28 00:12+0200\n"
-"PO-Revision-Date: 2020-04-28 00:13+0200\n"
+"POT-Creation-Date: 2020-04-28 00:48+0200\n"
+"PO-Revision-Date: 2020-04-28 00:48+0200\n"
 "Last-Translator: \n"
 "Language: it\n"
 "Language-Team: it <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgstr "Tipi_di_campi"
 msgid "Countries"
 msgstr "Nazioni"
 
-#: covid/forms.py:11 covid/routes.py:191 covid/routes.py:299
+#: covid/forms.py:11 covid/routes.py:191 covid/routes.py:226
 msgid "plot"
 msgstr "disegna"
 
@@ -59,43 +59,47 @@ msgstr "questi paesi sono sconosciuti: %(unknown)s"
 msgid "overlap"
 msgstr "sovrapporre"
 
-#: covid/routes.py:314
+#: covid/routes.py:241
 #, python-format
 msgid "%(function)s: these fields are not allowed: %(notallowed)s"
 msgstr "%(function)s: questi campi non sono ammessi: %(notallowed)s"
 
-#: covid/routes.py:317
+#: covid/routes.py:244
 #, python-format
 msgid "%(function)s: on parameter <normalize>"
 msgstr "%(function)s: nel parametro <normalize>"
 
-#: covid/routes.py:320
+#: covid/routes.py:247
 #, python-format
 msgid "%(function)s: on parameter <overlap>"
 msgstr "%(function)s: nel parametro <overlap>"
 
-#: covid/routes.py:329
+#: covid/routes.py:256
 msgid "Observations about Covid-19 outbreak"
 msgstr "Osservazioni sulla epidemia di Covid-19"
 
-#: covid/routes.py:330
+#: covid/routes.py:257
 msgid "number of cases"
 msgstr "numero di casi"
 
-#: covid/routes.py:330
+#: covid/routes.py:257
 msgid "rate to population"
 msgstr "rapporto rispetto la popolazione"
 
-#: covid/routes.py:331
+#: covid/routes.py:258
 msgid "date"
 msgstr "data"
 
-#: covid/routes.py:342
+#: covid/routes.py:258
+msgid "days from overlap point"
+msgstr "giorni dal punto di sovrapposizione"
+
+#: covid/routes.py:269
 #, python-format
 msgid "%(function)s: got an empty dataframe from pivot"
 msgstr "%(function)s: ricevuto un dataframe vuoto dal pivot"
 
-#: covid/routes.py:375
+#: covid/routes.py:302
 #, python-format
 msgid "%(column)s of %(country)s"
 msgstr "%(column)s di %(country)s"

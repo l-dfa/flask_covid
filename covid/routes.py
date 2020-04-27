@@ -204,79 +204,6 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
                           )
 
 
-##@app.route('/overlap/<ids>/')
-##@app.route('/overlap/<ids>/<column>')
-#@app.route('/overlap/<contest>/<ids>/<fields>/<normalized>/<overlapped>')
-#def draw_overlap(contest, ids, fields='cases', normalized=False, overlapped=False):
-#    '''show overlapped countries trend
-#    
-#       params: 
-#           - ids       str -  string of concat nation ids; e.g. it-fr-nl
-#           - column    str - column with values to graph; e.g. cases or deaths
-#       '''
-#    app.logger.debug('draw_overlap({}, {}, {}, {})'.format(contest, ids, fields, normalized))
-#    kwargs={'contest': contest,
-#           'ids': ids,
-#           'fields': fields,
-#           'normalized': normalized,
-#           'overlapped': overlapped,
-#          }
-#    if contest not in {'continents', 'nations'}:
-#        raise KeyError
-#    countries = ids.split('-')                         # list of ids of nations or continents
-#    country_names = [ nations.get_nation_name(country) for country in countries]
-#    df = open_data(app.config['DATA_FILE'], pd.read_csv, world_shape)
-#    if contest == 'nations':
-#        field = 'geoId'
-#    else:
-#        field = 'continentExp'
-#    checklist = df[field].drop_duplicates()
-#
-#    if set(countries)-set(checklist):    # some countries aren't in checklist: not good
-#        unknown = set(countries)-set(checklist)
-#        raise ValueError(_('these countries are unknown: %(unknown)s', unknown=unknown))
-#
-#    sdf = df[(df['geoId'].isin(countries))]
-#    countries = sdf['countriesAndTerritories'].drop_duplicates().tolist()
-#    # this is slow but manage missing days
-#    threshold = suggest_threshold(sdf, column=column, ratio=THRESHOLD_RATIO)
-#    sdf1 = pivot_with_overlap(sdf, column=column, threshold=threshold)
-#    
-#    if sdf1 is None:
-#      return _("this is an error: go back!")
-#    sdf1 = sdf1.cumsum()
-#
-#    # Generate the figure **without using pyplot**.
-#    fig = generate_figure(sdf1,
-#                          countries, 
-#                          #title='{} of {} due to Covid-19'.format(
-#                          #             'number' if column == 'cases' or column == 'deaths' else 'ratio',
-#                          #             'cases' if column == 'cases' or column == 'norm_cases' else 'deaths',
-#                          #                                       ),
-#                          #xlabel=_('date'),
-#                          #ylabel='{} of {}'.format(
-#                          #             'number' if column == 'cases' or column == 'deaths' else 'ratio',
-#                          #             'cases' if column == 'cases' or column == 'norm_cases' else 'deaths',
-#                          #                        ),
-#                          
-#                         )
-#    
-#    # Save it to a temporary buffer.
-#    buf = StringIO()
-#    fig.savefig(buf, format="svg")
-#    soup = bs.BeautifulSoup(buf.getvalue(),'lxml')          # parse image
-#    img_data = soup.find('svg')                             # get image data only (<svg ...> ... </svg>)
-#    return render_template('plot.html',
-#                           title=_('overlap'),
-#                           column=column,
-#                           countries=countries,
-#                           ids=ids,
-#                           overlap=True,
-#                           threshold=threshold,
-#                           img_data = img_data
-#                          )
-
-
 def draw_continents(df, countries, fields, normalized=False):
     '''DO NOT USE. this is a placeholder to develop'''
     app.logger.debug('draw_continents')
@@ -328,7 +255,7 @@ def draw_nations(df, countries, fields, normalize=False, overlap=False):
     xlabelrot = 80
     title  = _l('Observations about Covid-19 outbreak')
     ylabel = _l('number of cases') if not normalize else _l('rate to population')
-    xlabel = _l('date')
+    xlabel = _l('date') if not overlap else _l('days from overlap point')
     
     for field, ltype in zip(fields, ['-', '--', '-.', ':'][0:len(fields)]):
         if overlap:
