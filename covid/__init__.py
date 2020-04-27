@@ -1,7 +1,9 @@
 import os
 import pandas as pd
+import logging
 
 from datetime import datetime, date
+from logging.handlers import RotatingFileHandler
 
 import click
 
@@ -62,15 +64,84 @@ class Nations(object):
     def __unicode__(self):
         return unicode(repr(self.__n__))
 
-    def get_for_select(self):
-        l = [(id, name) for id, name in self.__n__.items()]
+    def get_for_select(self, continents=None):
+        '''create a list of 2-tuple (id,nations,) of indicated continents
+        
+        params:
+            - continents              str or list of str - a single continent, or 
+                                          a list of continents; if None we get all continents
+        
+        return: a list of 2-tuple (id,nations,) of indicated continents
+        '''
+        l = []
+        if continents is None:
+            continents = list(self.__n__.keys())
+        elif type(continents) == type([]):
+            pass
+        else:
+            continents = [continents]
+        
+        for continent in continents:
+            l.extend( [(id, name) for id, name in self.__n__[continent].items()] )
         l.sort(key = lambda x: x[1])
         return l
         
-    def get_for_list(self):
-        l = [name for id, name in self.__n__.items()]
+    def get_for_list(self, continents=None):
+        '''create a list of nations of indicated continents
+        
+        params:
+            - params                str or list of str - a single continent, or 
+                                        a list of continents; if None we get all continents
+        
+        return: a list of names of nations belonging to the indicated continents
+        '''
+        l = []
+        if continents is None:
+            continents = list(self.__n__.keys())
+        elif type(continents) == type([]):
+            pass
+        else:
+            continents = [continents]
+        
+        for continent in continents:
+            l.extend([name for id, name in self.__n__[continent].items()])
         l.sort()
         return l
+
+    def add_nation(self, continent, id, name):
+        ''' add a single nation
+        
+        params:
+            - continent       str - continent name
+            - id              str - identifier of nation
+            - name            str - name of nation
+            
+        return None
+        '''
+        if continent not in self.__n__:
+            self.__n__[continent] = dict()
+        self.__n__[continent][id] = name
+
+    def get_nation_name(self, id, default=None):
+        ''' add a single nation
+        
+        params:
+            - continent       str - continent name
+            - id              str - identifier of nation
+            - name            str - name of nation
+            
+        return None
+        '''
+        name = None
+        continents = list(self.__n__.keys())
+        for continent in continents:
+            name = self.__n__.get(continent).get(id, None)
+            if name is not None:
+                break
+        if name is None:
+            name = default
+            
+        return name
 
 
 def make_nations():
@@ -82,9 +153,10 @@ def make_nations():
     '''
     df = pd.read_csv(app.config['DATA_FILE'])
     n = Nations()
-    cdf = df[['countriesAndTerritories', 'geoId']].drop_duplicates()
-    for row, c in cdf.iterrows():           # row, country:(name, id,)
-        n[c[1]] = c[0]
+    cdf = df[['countriesAndTerritories', 'geoId', 'continentExp']].drop_duplicates()
+    for row, c in cdf.iterrows():           # row, country:(name, id,, continent)
+        #n[c[1]] = c[0]
+        n.add_nation(c[2], c[1], c[0])      # continent, id, name
     return n
 
 
@@ -92,6 +164,22 @@ app = Flask(__name__)            # warn.here sequence of actions count
 translate_cli = AppGroup('translate')
 app.config.from_object(Config)
 #app.secret_key = os.urandom(16)      # needed by session
+
+# START setting logger
+if not app.debug:
+    if not os.path.exists('logs'):
+            os.mkdir('logs')
+    file_handler = RotatingFileHandler(app.config['LOG']['FILE'], maxBytes=app.config['LOG']['BUFSIZE'],
+                                       backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+    
+    app.logger.setLevel(logging.ERROR)
+    app.logger.debug('Covid startup')
+# END  setting logger
+
 
 @translate_cli.command('init')
 @click.argument('lang')
@@ -123,6 +211,13 @@ app.cli.add_command(translate_cli)
 
 
 nations = make_nations()
+
+## START DEBUGGING
+#continents = list(nations.keys())
+#for continent in continents:
+#    print(f'nations list for {continent}: {nations.get_for_select(continents=continent)}')
+## STOP  DEBUGGING
+
 babel = Babel(app)
 
 
@@ -130,5 +225,5 @@ babel = Babel(app)
 def get_locale():
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
-from covid import routes
+from covid import routes, errors
 

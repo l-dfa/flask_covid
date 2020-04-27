@@ -12,7 +12,9 @@
         
         <!-- warning: use 'url_for' to get static resources, otherwise it could fail on some template(s) -->
         <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery-3.5.0.js') }}"></script>
         <link rel="icon" type="static/images/ico" href="{{ url_for('static', filename='images/favicon.ico') }}" />
         <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/pygments.css') }}">
@@ -52,6 +54,7 @@
         
         <!-- Core SCRIPTS - Include with every page -->
         {% block javascript %}
+            <script type="text/javascript">$( function (){$('[data-toggle="tooltip"]').tooltip()} )</script>
         {% endblock %}
     </body>
 </html>

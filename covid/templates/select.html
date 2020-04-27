@@ -3,20 +3,51 @@
 {% block content %}
 
         <div class="container" style="background-color:WhiteSmoke;overflow-y:auto;">
-                <form action="" method="post" novalidate>
-                    {{ form.hidden_tag() }}
-                    <h3>{{ _('Select country') }}...</h3>
-                    <p>... {{ _('or countries. To select more nations, hold the Ctrl key while click on the chosen nations')}}.</p>
-                    <p>
-                        <!--  \{\{ form.countries.label \}\}<br> -->
-                        {{ form.countries(size=22) }}<br>
-                        {% for error in form.countries.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </p>
-                    <p>{{ form.submit() }}</p>
-                </form>
-
+            <form action="" method="post" novalidate>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-12">
+                            {{ form.hidden_tag() }}
+                            <h5>{{ _('Select what kind of information') }}...</h5>
+                            <p>... {{ _('you wish to plot for every country') }}.</p>
+                            <p>
+                                {# {{ form.fields.label }}<br> #}
+                                {{ form.fields(size=2, **{'data-toggle': 'tooltip',
+                                                          'data-placement': 'top',
+                                                          'title': _('To select more types of informations, hold the Ctrl key while click on the chosen type')}) }}<br>
+                                {% for error in form.fields.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+                            </p>
+                            </div>
+                        </div>
+                        {#
+                        <div class="row">
+                            <h5>{{ _('Select something other') }}...</h5>
+                        </div>
+                        #}
+                    </div>
+                    <div class="col-md-8">
+                        <h5>{{ _('Select one country') }}...</h5>
+                        <p>... {{ _('or more countries') }}.</p>
+                        <p>
+                            {# {{ form.countries.label }}<br> #}
+                            {{ form.countries(size=22, **{'data-toggle': 'tooltip',
+                                                           'data-placement': 'top',
+                                                           'title': _('To select more nations, hold the Ctrl key while click on them')}) }}<br>
+                            {% for error in form.countries.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>{{ form.submit() }}</p>
+                    </div>
+                </div>
+            </form>
         </div>
 
 

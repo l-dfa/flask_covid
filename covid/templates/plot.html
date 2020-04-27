@@ -5,28 +5,44 @@
     <div class="container" style="background-color:WhiteSmoke;overflow-y:auto;">
         {% if img_data %}
             <div>
-            <h3>{{ _('Time trend of total positive cases of Covid-19') }}</h3>
+                <h3>{{ _('Time trend of ...')}} </h3>
+                    <p> {{ _('... these observations related to Covid-19') }}:</p>
+                    <ul>
+                    {% if 'cases' in columns %}
+                        <li>{{ _('total positive cases') }}</li>
+                    {% endif %}
+                    {% if 'deaths' in columns %}
+                        <li>{{ _('total number of deaths') }}</li>
+                    {% endif %}
+                    </ul>
+                </h3>
                 {% if countries %}
-                <p> {{ _('about these nations') }}:</p>
-                <ul>
-                {%for country in countries %}
-                    <li>{{ country }}</li>
-                {% endfor %}
-                </ul>
+                    <p> {{ _('about these nations') }}:</p>
+                    <ul>
+                    {%for country in countries %}
+                        <li>{{ country }}</li>
+                    {% endfor %}
+                    </ul>
                 {% endif %}
             <div>
             {% if overlap %}
             <div>
                 <p>{{ _('Beware of fact the below image overlap the lines of the different nations') }}. </p>
                 <p>{{ _('To do so, lines are translated each other by the day where they exceed a treshold of') }}
-                   {{ threshold }} {{ _('positive cases in a couple of adjacent days') }}. </p>
-                <p>{{ _('If you wish, you can') }}, <a href="{{ url_for('draw_graph', ids=ids) }}">{{ _('go back to the normal view') }}</a>. </p>
+                   {{ threshold }} {{ _('cases in a couple of adjacent days') }}. </p>
+                <p>{{ _('If you wish, you can') }}, <a href="{{ url_for('draw_graph', **kwargs) }}">{{ _('go back to the normal view') }}</a>. </p>
             </div>
-            {% elif countries|count > 1 %}
+            {% elif countries|count > 1 and columns|count == 1 %}
             <div>
-                <p>{{ _('If you wish') }}, <a href="{{ url_for('draw_overlap', ids=ids) }}">{{ _('you could overlap') }}</a> {{ _('the lines of these nations') }}. </p>
+                <p>{{ _('If you wish') }}, <a href="{{ url_for('draw_graph', **kwargs) }}">{{ _('you could overlap') }}</a> 
+                {{ _('the lines of these nations') }}. </p>
+            </div>
             {% endif %}
-            {{ img_data|safe }}
+            {% for key in request.args.keys() %}
+            <p> {{key}} </p>
+            {% endfor %}
+            <div>
+               {{ img_data|safe }}
             </div>
             </div>
         {% endif %}
