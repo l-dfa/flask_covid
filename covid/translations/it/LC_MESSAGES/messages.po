@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-04-28 00:48+0200\n"
-"PO-Revision-Date: 2020-04-28 00:48+0200\n"
+"POT-Creation-Date: 2020-05-02 03:04+0200\n"
+"PO-Revision-Date: 2020-05-02 03:06+0200\n"
 "Last-Translator: \n"
 "Language: it\n"
 "Language-Team: it <LL@li.org>\n"
@@ -35,71 +35,85 @@ msgid "Type_of_fields"
 msgstr "Tipi_di_campi"
 
 #: covid/forms.py:10
+msgid "Type_of_entity"
+msgstr "Tipo di entità"
+
+#: covid/forms.py:11 covid/forms.py:12
 msgid "Countries"
 msgstr "Nazioni"
 
-#: covid/forms.py:11 covid/routes.py:191 covid/routes.py:226
+#: covid/forms.py:13 covid/routes.py:212
 msgid "plot"
 msgstr "disegna"
 
-#: covid/routes.py:94
+#: covid/routes.py:93
 msgid "Covid: time trend analysis"
 msgstr "Covid: analisi delle tendenze temporali"
 
-#: covid/routes.py:133 covid/templates/select_core_checkbox.html:8
+#: covid/routes.py:123
+#, python-format
+msgid "%(function)s: %(contest)s is not a valid contest"
+msgstr "%(function)s: %(contest)s non è un contesto valido"
+
+#: covid/routes.py:145 covid/templates/select_core_checkbox.html:8
 msgid "Select country"
 msgstr "Seleziona la nazione"
 
-#: covid/routes.py:182
+#: covid/routes.py:192
 #, python-format
-msgid "these countries are unknown: %(unknown)s"
-msgstr "questi paesi sono sconosciuti: %(unknown)s"
+msgid "%(function)s: contest %(contest)s is not allowed: "
+msgstr "%(function)s: il contesto %(contest)s non è ammesso: "
 
-#: covid/routes.py:191
+#: covid/routes.py:205
+#, python-format
+msgid "%(function)s: these countries/continents are unknown: %(unknown)s"
+msgstr "%(function)s: queste nazioni/continenti sono sconosciuti: %(unknown)s"
+
+#: covid/routes.py:212
 msgid "overlap"
 msgstr "sovrapporre"
 
-#: covid/routes.py:241
+#: covid/routes.py:236
 #, python-format
 msgid "%(function)s: these fields are not allowed: %(notallowed)s"
 msgstr "%(function)s: questi campi non sono ammessi: %(notallowed)s"
 
-#: covid/routes.py:244
+#: covid/routes.py:239
 #, python-format
 msgid "%(function)s: on parameter <normalize>"
 msgstr "%(function)s: nel parametro <normalize>"
 
-#: covid/routes.py:247
+#: covid/routes.py:244
 #, python-format
 msgid "%(function)s: on parameter <overlap>"
 msgstr "%(function)s: nel parametro <overlap>"
 
-#: covid/routes.py:256
-msgid "Observations about Covid-19 outbreak"
-msgstr "Osservazioni sulla epidemia di Covid-19"
-
-#: covid/routes.py:257
-msgid "number of cases"
-msgstr "numero di casi"
-
-#: covid/routes.py:257
-msgid "rate to population"
-msgstr "rapporto rispetto la popolazione"
-
-#: covid/routes.py:258
-msgid "date"
-msgstr "data"
-
-#: covid/routes.py:258
-msgid "days from overlap point"
-msgstr "giorni dal punto di sovrapposizione"
-
-#: covid/routes.py:269
+#: covid/routes.py:273
 #, python-format
 msgid "%(function)s: got an empty dataframe from pivot"
 msgstr "%(function)s: ricevuto un dataframe vuoto dal pivot"
 
-#: covid/routes.py:302
+#: covid/routes.py:281
+msgid "Observations about Covid-19 outbreak"
+msgstr "Osservazioni sulla epidemia di Covid-19"
+
+#: covid/routes.py:282
+msgid "number of cases"
+msgstr "numero di casi"
+
+#: covid/routes.py:282
+msgid "rate to population"
+msgstr "rapporto rispetto la popolazione"
+
+#: covid/routes.py:283
+msgid "date"
+msgstr "data"
+
+#: covid/routes.py:283
+msgid "days from overlap point"
+msgstr "giorni dal punto di sovrapposizione"
+
+#: covid/routes.py:315
 #, python-format
 msgid "%(column)s of %(country)s"
 msgstr "%(column)s di %(country)s"
@@ -278,55 +292,70 @@ msgstr "casi positivi totali"
 msgid "total number of deaths"
 msgstr "numero totale di decessi"
 
-#: covid/templates/plot.html:20
+#: covid/templates/plot.html:21
 msgid "about these nations"
 msgstr "riguardo queste nazioni"
 
-#: covid/templates/plot.html:30
-msgid "Beware of fact the below image overlap the lines of the different nations"
-msgstr ""
-"Attenzione al fatto che l'immagine seguente sovrappone le linee di nazioni "
-"differenti"
+#: covid/templates/plot.html:23
+msgid "about these continents"
+msgstr "riguardo questi continenti"
 
-#: covid/templates/plot.html:31
+#: covid/templates/plot.html:34
+msgid "Beware of fact the below image overlap the lines of the different"
+msgstr ""
+"Attenzione al fatto che la seguente immagine sovrappone le linee di differenti"
+
+#: covid/templates/plot.html:36
+msgid "nations"
+msgstr "nazioni"
+
+#: covid/templates/plot.html:38
+msgid "continents"
+msgstr "continenti"
+
+#: covid/templates/plot.html:41
 msgid ""
 "To do so, lines are translated each other by the day where they exceed a "
 "treshold of"
 msgstr "Per farlo, le linee sono traslate al giorno in cui eccedono una soglia di"
 
-#: covid/templates/plot.html:32
+#: covid/templates/plot.html:42
 msgid "cases in a couple of adjacent days"
 msgstr "casi in una coppia di giorni adiacenti"
 
-#: covid/templates/plot.html:33
+#: covid/templates/plot.html:43
 msgid "If you wish, you can"
 msgstr "Se lo desideri, puoi"
 
-#: covid/templates/plot.html:33
+#: covid/templates/plot.html:43
 msgid "go back to the normal view"
 msgstr "tornare alla vista normale"
 
-#: covid/templates/plot.html:37
+#: covid/templates/plot.html:47
 msgid "If you wish"
 msgstr "Se lo desideri"
 
-#: covid/templates/plot.html:37
+#: covid/templates/plot.html:47
 msgid "you could overlap"
 msgstr "puoi sovrapporre"
 
-#: covid/templates/plot.html:38
+#: covid/templates/plot.html:49
 msgid "the lines of these nations"
 msgstr "le linee di queste nazioni"
 
-#: covid/templates/select.html:12
+#: covid/templates/plot.html:51
+msgid "the lines of these continents"
+msgstr "le linee di questi continenti"
+
+#: covid/templates/select.html:11
 msgid "Select what kind of information"
 msgstr "Seleziona che tipo di informazione"
 
-#: covid/templates/select.html:13
+#: covid/templates/select.html:12
 msgid "you wish to plot for every country"
 msgstr "desideri disegnare per ogni nazione"
 
-#: covid/templates/select.html:18
+#: covid/templates/select.html:17
 msgid ""
 "To select more types of informations, hold the Ctrl key while click on the "
 "chosen type"
@@ -334,19 +363,40 @@ msgstr ""
 "Per selezionare più tipi di informazioni, tieni premuto il tasto Ctrl mentre "
 "fai click sul tipo scelto"
 
-#: covid/templates/select.html:32
+#: covid/templates/select.html:26
+msgid "Select what kind of geographycal entity"
+msgstr "Selezione quale tipo di entità geografica"
+
+#: covid/templates/select.html:27
+msgid "you wish to plot"
+msgstr "desideri disegnare"
+
+#: covid/templates/select.html:43
 msgid "Select one country"
 msgstr "Seleziona una nazione"
 
-#: covid/templates/select.html:33
+#: covid/templates/select.html:44
 msgid "or more countries"
 msgstr "o più nazioni"
 
-#: covid/templates/select.html:38
+#: covid/templates/select.html:50
 msgid "To select more nations, hold the Ctrl key while click on them"
 msgstr ""
 "Per selezionare più nazioni, tieni premuto il tasto Ctrl mentre fai click su di "
 "loro"
+
+#: covid/templates/select.html:59
+msgid "Select one continent"
+msgstr "Seleziona un continente"
+
+#: covid/templates/select.html:60
+msgid "or more continents"
+msgstr "o più continenti"
+
+#: covid/templates/select.html:67
+msgid "To select more continents, hold the Ctrl key while click on them"
+msgstr ""
+"Per selezionare più continenti, tieni premuto il tasto Ctrl mentre li clicchi"
 
 #: covid/templates/select_core_checkbox.html:9
 msgid ""
@@ -361,3 +411,15 @@ msgstr ""
 
 #~ msgid "positive cases in a couple of adjacent days"
 #~ msgstr "casi positivi in una coppia di giorni adiacenti"
+
+#~ msgid "these countries are unknown: %(unknown)s"
+#~ msgstr "questi paesi sono sconosciuti: %(unknown)s"
+
+#~ msgid ""
+#~ "Beware of fact the below image overlap the lines of the different nations"
+#~ msgstr ""
+#~ "Attenzione al fatto che l'immagine seguente sovrappone le linee di nazioni "
+#~ "differenti"
+
+#~ msgid "%function)s: these countries/continents are unknown: %(unknown)s"
+#~ msgstr "%function)s: queste nazioni/continenti sono sconosciuti: %(unknown)s"

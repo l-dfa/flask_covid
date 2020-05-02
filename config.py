@@ -16,7 +16,7 @@ class Config(object):
         'WLICENSE':  _l('CC BY-SA 4.0 license'), 
         'WLICENSEREF': "https://creativecommons.org/licenses/by-sa/4.0/", 
     }
-    VER = '0.2'
+    VER = '0.3'
     LOG = {
         'FILE': basedir + '/covid/logs/covid.log',
         'BUFSIZE': 10240,

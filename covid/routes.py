@@ -89,7 +89,6 @@ def index():
     df = open_data(app.config['DATA_FILE'], pd.read_csv, world_shape)
     first, last = (df['dateRep'].min(), df['dateRep'].max(),)
     how_many = df['countriesAndTerritories'].drop_duplicates().count()
-    #breakpoint()
     return render_template('index.html', 
                            title=_("Covid: time trend analysis"), 
                            #NATIONS=nations.get_for_list(), 
@@ -107,20 +106,32 @@ def select():
     app.logger.debug('select()')
     form = SelectForm()
     form.fields.choices = FIELDS_CHOICES.copy()
-    form.fields.default = ['1',]
+    # to set a default, this does not work; we need to use the "default" parameter in the class, or set data (see below)
+    #form.fields.default = ['1',]
+    form.contest.choices = [('nations','nations',), ('continents', 'continents',),]
+    form.continents.choices = [ (c, c, ) for c in nations.keys()]
     form.countries.choices = nations.get_for_select()
     
     if form.validate_on_submit():
         # contest: nations or continent
-        contest = 'nations'  #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CHANGE, this will be from form
-        # chaining nations ids
-        ids = '-'.join(form.countries.data)             # here build string with nations ids: e.g. it-fr-nl
+        contest = form.contest.data[:]
+        if contest == 'nations':
+            ids = '-'.join(form.countries.data)             # here build string with nations ids: e.g. it-fr-nl
+        elif contest == 'continents':
+            ids = '-'.join(form.continents.data)             # here build string with continents ids: e.g. Asia-Europe
+        else:
+            raise ValueError(_('%(function)s: %(contest)s is not a valid contest', function='select', contest=contest))
         # chaining names of fields to plot
         columns = [name for code, name in FIELDS_CHOICES if code in form.fields.data ]
         columns = '-'.join(columns)
         # type of values: normal or normalized
         normalize = False  #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CHANGE, this will be from form
         overlap   = False  #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CHANGE, this will be from form
+        
+        ## TEST <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        #contest = 'continents'
+        #ids = 'Europe-Asia'
+        
         return redirect(url_for('draw_graph', 
                                 contest=contest, 
                                 ids=ids, 
@@ -129,6 +140,7 @@ def select():
                                 overlap=overlap
                                )
                        )
+    #form.fields.data = ['1']                            # this sets a default value
     return render_template('select.html', 
                            title=_('Select country'), 
                            form=form,
@@ -155,38 +167,47 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
         - draw continents deaths
         - draw normalized values
        '''
-    app.logger.debug('draw_graph({}, {}, {}, {}, {})'.format(contest, ids, fields, normalize, overlap))
+    fname = 'draw_graph'
+    app.logger.debug('{}({}, {}, {}, {}, {})'.format(fname, contest, ids, fields, normalize, overlap))
+    
+    # START parameters check
     normalize = True if normalize in {'True', 'true',} else False
     overlap   = True if overlap   in {'True', 'true',} else False
-    # args to return here
+    #   args to return here
     kwargs={'contest':  contest,
            'ids':       ids,
            'fields':    fields,
            'normalize': normalize,
            'overlap':   overlap,
           }
-    # check request contest
-    if contest not in {'continents', 'nations'}:
-        raise KeyError
-    # check resquest countries ids
-    countries = ids.split('-')                         # list of ids of nations or continents
-    country_names = [ nations.get_nation_name(country) for country in countries]
-    df = open_data(app.config['DATA_FILE'], pd.read_csv, world_shape)
-    if contest == 'nations':
-        field = 'geoId'
+          
+    #   check request contest
+    if contest=='nations':
+        country_field = 'geoId'
+        country_name_field = 'countriesAndTerritories'
+    elif contest=='continents':
+        country_field = 'continentExp'
+        country_name_field = 'continentExp'
     else:
-        field = 'continentExp'
-    checklist = df[field].drop_duplicates()
-    if set(countries)-set(checklist):    # some countries aren't in checklist: not good
-        unknown = set(countries)-set(checklist)
-        raise ValueError(_('these countries are unknown: %(unknown)s', unknown=unknown))
+        raise ValueError(_('%(function)s: contest %(contest)s is not allowed: ', function=fname, contest=contest))
+        
+    #   check request countries or continents
+    countries = ids.split('-')                         # list of ids of nations or continents
+    if contest=='nations':
+        country_names = [ nations.get_nation_name(country) for country in countries]
+    else:
+        country_names = countries
+        
+    df = open_data(app.config['DATA_FILE'], pd.read_csv, world_shape)
+    checklist = df[country_name_field].drop_duplicates()
+    if set(country_names)-set(checklist):    # some countries aren't in checklist: not good
+        unknown = set(country_names)-set(checklist)
+        raise ValueError(_('%(function)s: these countries/continents are unknown: %(unknown)s', function=fname, unknown=unknown))
+        
     # end of parameters checks
     threshold = 0
     
-    if contest == 'nations':
-        img_data, threshold = draw_nations(df, countries, fields, normalize=normalize, overlap=overlap)
-    else:
-        img_data = draw_continents(df, countries, fields, normalize=normalize, overlap=overlap)
+    img_data, threshold = draw_nations(df, country_name_field, country_names, fields, normalize=normalize, overlap=overlap)
     
     title = _('overlap') if overlap else _('plot')
     kwargs['overlap'] = False if overlap else True    # ready to switch from overlap to not overlap, and vice versa
@@ -204,50 +225,54 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
                           )
 
 
-def draw_continents(df, countries, fields, normalized=False):
-    '''DO NOT USE. this is a placeholder to develop'''
-    app.logger.debug('draw_continents')
-    raise KeyError
-    sdf = df[(df['geoId'].isin(countries))]
-    countries = sdf['countriesAndTerritories'].drop_duplicates().tolist()
-    # this is slow but manage missing days
-    sdf1 = pivot_by_iteration(sdf, column=column)
-    sdf1 = sdf1.cumsum()
-
-    # Generate the figure **without using pyplot**.
-    fig = generate_figure(sdf1, countries, xlabelrot=80)
+def draw_nations(df, country_name_field, country_names, fields, normalize=False, overlap=False):
+    fname = 'draw_nations'
+    app.logger.debug(fname)
     
-    # Save it to a temporary buffer.
-    buf = StringIO()
-    fig.savefig(buf, format="svg")
-    soup = bs.BeautifulSoup(buf.getvalue(),'lxml')          # parse image
-    img_data = soup.find('svg')                             # get image data only (<svg ...> ... </svg>)
-    return render_template('plot.html',
-                           title=_('plot'),
-                           column=column,
-                           countries=countries,
-                           ids=ids,
-                           overlap=False,
-                           img_data = img_data
-                          )
-
-
-def draw_nations(df, countries, fields, normalize=False, overlap=False):
-    app.logger.debug('draw_nations')
     fields = fields.split('-')                         # list of fields to plot
     allowed = {'cases', 'deaths'}
     if set(fields) - allowed:                          # some fields aren't allowed
         notallowed = set(fields)-allowed
-        raise ValueError(_('%(function)s: these fields are not allowed: %(notallowed)s', function='draw_nations', notallowed=notallowed))
+        raise ValueError(_('%(function)s: these fields are not allowed: %(notallowed)s', function=fname, notallowed=notallowed))
 
     if type(normalize) is not type(True):
-        raise ValueError(_('%(function)s: on parameter <normalize>', function='draw_nations'))
+        raise ValueError(_('%(function)s: on parameter <normalize>', function=fname))
     
-    if type(overlap) is not type(True):
-        raise ValueError(_('%(function)s: on parameter <overlap>', function='draw_nations'))
+    if ( type(overlap) is not type(True)
+         or (overlap and len(fields)>1)
+       ):
+        raise ValueError(_('%(function)s: on parameter <overlap>', function=fname))
     
-    sdf = df[(df['geoId'].isin(countries))]
-    countries = sdf['countriesAndTerritories'].drop_duplicates().tolist()
+        
+    sdf = df[(df[country_name_field].isin(country_names))]                # selected dataframe
+    
+    # building a dataframe with the necessary data
+    edf = pd.DataFrame()                                                  # empty dataframe
+    
+    # temporary series to build dates; here as str 'yyyy-mm-dd'
+    stemp = (sdf['year'].apply(lambda x:"{:04d}-".format(x)) +
+                      sdf['month'].apply(lambda x:"{:02d}-".format(x)) +
+                      sdf['day'].apply(lambda x:"{:02d}".format(x))
+                     )
+    
+    edf['dateRep'] = stemp.map(lambda x: datetime.strptime(x, '%Y-%m-%d').date()) # date from str to date
+    
+    for field in fields:                                                  # adding fields cases&|deaths
+        edf[field]  = sdf[field]
+        
+    edf[country_name_field] = sdf[country_name_field]                     # adding names of countries|continents
+    edf = edf.groupby(['dateRep', country_name_field]).sum()
+    
+    if not overlap:
+        threshold = 0
+        sdf1 = pd.pivot_table(edf, index='dateRep',columns=country_name_field)
+    else:
+        threshold = suggest_threshold(edf, country_name_field, column=fields[0], ratio=THRESHOLD_RATIO)
+        sdf1 = pivot_with_overlap(edf, country_name_field, column=fields[0], threshold=threshold)
+    if sdf1 is None:
+        raise ValueError(_('%(function)s: got an empty dataframe from pivot', function=fname))
+    
+    sdf1 = sdf1.cumsum()
     
     # fighting for a good picture
     fig = Figure(figsize=(9,7))
@@ -257,21 +282,7 @@ def draw_nations(df, countries, fields, normalize=False, overlap=False):
     ylabel = _l('number of cases') if not normalize else _l('rate to population')
     xlabel = _l('date') if not overlap else _l('days from overlap point')
     
-    for field, ltype in zip(fields, ['-', '--', '-.', ':'][0:len(fields)]):
-        if overlap:
-            threshold = suggest_threshold(sdf, column=field, ratio=THRESHOLD_RATIO)
-            sdf1 = pivot_with_overlap(sdf, column=field, threshold=threshold)
-        else:
-            threshold = 0
-            sdf1 = pivot_by_iteration(sdf, column=field)  # this is slow but manage missing days
-        
-        if sdf1 is None:
-            raise ValueError(_('%(function)s: got an empty dataframe from pivot', function='draw_nations'))
-        
-        sdf1 = sdf1.cumsum()
-
-        # Generate the figure **without using pyplot**.
-        fig = generate_figure(ax, sdf1, countries, column=field, ltype=ltype)
+    fig = generate_figure(ax, sdf1, country_names, columns=fields)
     
     ax.grid(True, linestyle='--')
     ax.legend()
@@ -291,16 +302,18 @@ def draw_nations(df, countries, fields, normalize=False, overlap=False):
     return (img_data, threshold,)
 
 
-def generate_figure(ax, df, countries, column='cases', ltype = '-'):
+def generate_figure(ax, df, countries, columns=None):
     '''# Generate the figure **without using pyplot**.'''
+    if columns is None: columns = ['cases']
     
-    for country, color in zip(countries, COLORS[0:len(countries)]):
-        ax.plot(df.index.values,          # x
-                df[country],         # y
-                ltype,
-                color=color,
-                label=_('%(column)s of %(country)s', column=column, country=country)         # label in legend
-        )
+    for column, ltype in zip(columns, ['-', '--', '-.', ':'][0:len(columns)]):
+        for country, color in zip(countries, COLORS[0:len(countries)]):
+            ax.plot(df.index.values,          # x
+                    df[column][country],         # y
+                    ltype,
+                    color=color,
+                    label=_('%(column)s of %(country)s', column=column, country=country)         # label in legend
+                   )
         
     fig = ax.get_figure()
 
@@ -320,7 +333,6 @@ def world_shape(df):
     return df
 
 
-
 def open_data(fname, opener, shaper):
     '''read a dataframe from file
     
@@ -335,105 +347,58 @@ def open_data(fname, opener, shaper):
     df = shaper(df)
     return df
 
-def pivot_by_iteration(df, column='cases'):
-    '''
-    pivot a dataframe iterating over columns and dates
-    
-    params df        pandas dataframe
-    
-    return sdf       pandas dataframe
-    
-    remark.
-      given a df as   date ... cases death country ... with:
-        - date       a date
-        - cases      the total cases on the day (i.e, 
-                       - if march 01 2020 cases is 100 @ Italy and we have 10 new cases in Italy that day,
-                       -  then: march 02 2020 cases value is 110 @ Italy)
-        - death      the total number of deceased on the day (same consideration as above) 
-        - country    a country
-      example:   date ...     cases death country
-                 2020-03-01   100   10    country1
-                 2020-03-01   80    8     country2
-                 ...
-                 2020-03-01   101   11    countryN
-      this function builds a dataframe as
-                         country1 country2 ... countryN
-            date
-            2020-03-01   100      80           101
-      where values in countryI are the cases in that country
-      
-      Warning: this function is pretty slow because iterate over rows
-    '''
-    
-    # building an empty df with dates as index
-    dates = df['dateRep'].drop_duplicates().sort_values()
-    sdf = pd.DataFrame(dates, columns=['dateRep'])                  # df with dates
-    countries = df['countriesAndTerritories'].drop_duplicates().tolist()
-    sdf = sdf.reindex(sdf.columns.tolist() + countries, axis=1)   # add a column every country
-    sdf.set_index('dateRep', inplace=True)                           # dates to index
-    
-    # iterating over countries
-    for country in countries:
-        acountry = df[df['countriesAndTerritories']==country]
-        # iterating over dates in a country
-        for adate in acountry['dateRep']:
-            try:
-                # what a mess to extract a value!
-                # §§ CHECK §§
-                sdf.loc[adate, country] = acountry[acountry['dateRep']==adate][column].values.tolist()[0]
-            except:
-                sdf.loc[adate, country] = np.nan
-    
-    return sdf
 
-def suggest_threshold(df, column='cases', ratio=0.1):
+def suggest_threshold(df, country_name_field, column='cases', ratio=0.1):
     '''ratio of the more little between the max cases of the countries
     
     params:
-        - df              pandas dataframe
-        - column          str - column with values to check
-        - ratio           float - ratio to apply default is 10%
+        - df                     pandas dataframe MultiIndex: dateRep+country_name_field (countries | continents)
+        - country_name_field     str - coutriesAndTerritories|continentExp
+        - column                 str - column with values to check: cases|deaths
+        - ratio                  float - ratio to apply default is 10%
         
     return threshold      int 
     '''
-    countries = df['countriesAndTerritories'].drop_duplicates().tolist()
-    little_country, little_cases = (countries[0], df[df['countriesAndTerritories']==countries[0]][column].max(), )
+
+    countries = df.index.get_level_values(country_name_field).drop_duplicates().values.tolist()
+    little_country, little_cases = (countries[0], df.xs(countries[0], level=country_name_field)[column].max(), )
+    
     for country in countries[1:]:
-        max_cases =  df[df['countriesAndTerritories']==country][column].max()
+        max_cases =  df.xs(country, level=country_name_field)[column].max()
         if max_cases < little_cases:
             little_country, little_cases = (country, max_cases,)
     return ceil(little_cases * ratio)
     
     
-def pivot_with_overlap(df, column= 'cases', threshold=THRESHOLD):
-    '''
-    pivot a dataframe iterating over columns and dates
-    traslating values to start at the same date
+def pivot_with_overlap(df, country_name_field, column= 'cases', threshold=THRESHOLD):
+    '''pivot a dataframe iterating over columns and dates traslating values to start at the same date
     
     params 
-        - df                pandas dataframe
-        - column          str - column with values to check
-        - threshold       int - value to overcome for two consecutive days
+        - df                     pandas dataframe MultiIndex: dateRep+country_name_field (countries | continents)
+        - country_name_field     str - coutriesAndTerritories|continentExp
+        - column                 str - column with values to check: cases|deaths
+        - threshold              int - value to overcome for two consecutive days
     
     return
         - sdf       pandas dataframe
         - None      in case of empty dataframe
     
     remark.
-      given a df as   date ... cases death country ... with:
+      given a (MultiIndex) df as   date+country cases death with:
         - date       a date
+        - country    a country
         - cases      the total cases on the day (i.e, 
                        - if march 01 2020 cases is 100 @ Italy and we have 10 new cases in Italy that day,
                        -  then: march 02 2020 cases value is 110 @ Italy)
         - death      the total number of deceased on the day (same consideration as above) 
-        - country    a country
-      example:   date ...     cases death country
-                 2020-03-01   0     0     country1
-                 2020-03-01   80    8     country2
-                 2020-03-02   10    0     country1
-                 2020-03-02   20    8     country2
-                 2020-03-03   20    1     country1
-                 2020-03-03   100   11    countryN
+      example                        cases death 
+                 date ...   country  
+                 2020-03-01 country1  0     0     
+                 2020-03-01 country2  80    8     
+                 2020-03-02 country1  10    0     
+                 2020-03-02 country2  20    8     
+                 2020-03-03 country1  20    1     
+                 2020-03-03 countryN  100   11    
                  ...
       this function builds a dataframe as
                  country1 country2 ... countryN
@@ -446,26 +411,25 @@ def pivot_with_overlap(df, column= 'cases', threshold=THRESHOLD):
       Warning: this function is pretty slow because iterate over rows
       
       Again: to align, seach a couple of adjacent days that exceed the indicated threshold
-      
-      Finally: column
     '''
+    fname = 'pivot_with_overlap'
 
     # building an empty df ...
-    dates = df['dateRep'].drop_duplicates().sort_values(ascending=True)
-    sdf = pd.DataFrame()                                         # empty df 
-    countries = df['countriesAndTerritories'].drop_duplicates().tolist()
+    dates = df.index.get_level_values('dateRep').drop_duplicates().values.tolist()
+    countries = df.index.get_level_values(country_name_field).drop_duplicates().values.tolist()
+
+    sdf = pd.DataFrame(columns=[[],[]])                          # empty df, hierachical columns (two levels)
     #    ... iterating over countries ...
     for country in countries:
-        acountry = df[df['countriesAndTerritories']==country]
+        #acountry = df[df[country_name_field]==country]
+        acountry = df.xs(country, level=country_name_field)
         cases_list = []
         zero_flag = True                   # while true: skip to next day
         #        ... iterating over dates in a country
         for adate in dates:
             #            catch two adjacent days data
             try:
-                # what a mess to extract a value!
-                # §§ CHECK §§
-                cases = acountry[acountry['dateRep']==adate][column].values.tolist()[0]
+                cases = acountry.loc[adate, column]
             except:
                 cases = None
             #            if we are skipping and cases is None, needless to continue, shunt the cicle
@@ -474,7 +438,7 @@ def pivot_with_overlap(df, column= 'cases', threshold=THRESHOLD):
             #            cases is not None, get the 2nd day
             if zero_flag:
                 try:
-                    next_cases = acountry[acountry['dateRep']==adate+timedelta(days=1)][column].values.tolist()[0]
+                    next_cases = acountry.loc[adate+timedelta(days=1), column]
                 except:
                     next_cases = None
                 
@@ -495,12 +459,25 @@ def pivot_with_overlap(df, column= 'cases', threshold=THRESHOLD):
             cases = cases if cases is not None else 0
             cases_list.append(cases)
              #            if not last date, cicle, else add column to dataframe
-            if adate+timedelta(days=1) in dates.values:
+            if adate+timedelta(days=1) in dates:
                 continue
             else:
-                sdf[country] = pd.Series(cases_list).astype(int)
+                # if new column is higher of dataframe, we need to stretch it, otherwise new column will be cutted
+                if sdf.shape[1] > 0 and (sdf.shape[0] < len(cases_list)):
+                    sdf = stretch(sdf, len(cases_list))
+                sdf[column, country] = pd.Series(cases_list).astype(int)
+                #app.logger.debug('{}: adding ({},{}) length: {}'.format(fname, column, country, len(cases_list)))
+
     if sdf.columns.to_list() == []:
         sdf = None
     return sdf
 
+def stretch(df, height):
+    '''raise the height of a dataframe to the requested size'''
+    if df.shape[0] >= height:
+        return df
+    
+    for ndx in range(df.shape[0], height):
+        df.loc[ndx] = np.NaN * df.shape[1]
+    return df
 

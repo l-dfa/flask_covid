@@ -17,7 +17,11 @@
                     </ul>
                 </h3>
                 {% if countries %}
-                    <p> {{ _('about these nations') }}:</p>
+                    {% if kwargs.contest == 'nations' %}
+                        <p> {{ _('about these nations') }}:</p>
+                    {% else %}
+                        <p> {{ _('about these continents') }}:</p>
+                    {% endif %}
                     <ul>
                     {%for country in countries %}
                         <li>{{ country }}</li>
@@ -27,7 +31,13 @@
             <div>
             {% if overlap %}
             <div>
-                <p>{{ _('Beware of fact the below image overlap the lines of the different nations') }}. </p>
+                <p>{{ _('Beware of fact the below image overlap the lines of the different') }} 
+                   {% if kwargs.contest == 'nations' %}
+                       {{ _('nations') }}.
+                   {% else %}
+                       {{ _('continents') }}.
+                   {% endif %}
+                </p>
                 <p>{{ _('To do so, lines are translated each other by the day where they exceed a treshold of') }}
                    {{ threshold }} {{ _('cases in a couple of adjacent days') }}. </p>
                 <p>{{ _('If you wish, you can') }}, <a href="{{ url_for('draw_graph', **kwargs) }}">{{ _('go back to the normal view') }}</a>. </p>
@@ -35,7 +45,12 @@
             {% elif countries|count > 1 and columns|count == 1 %}
             <div>
                 <p>{{ _('If you wish') }}, <a href="{{ url_for('draw_graph', **kwargs) }}">{{ _('you could overlap') }}</a> 
-                {{ _('the lines of these nations') }}. </p>
+                {% if kwargs.contest == 'nations' %}
+                    {{ _('the lines of these nations') }}.
+                {% else %}
+                    {{ _('the lines of these continents') }}.
+                {% endif %}
+                </p>
             </div>
             {% endif %}
             {% for key in request.args.keys() %}
