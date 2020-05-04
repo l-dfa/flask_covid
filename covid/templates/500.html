@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ _('An unexpected error has occurred') }}</h1>
-    <p>{{ _('The administrator has been notified. Sorry for the inconvenience!') }}</p>
-    <p><a href="{{ url_for('index') }}">{{ _('Covid Section') }}</a></p>
+
+    <div class="container" style="background-color:WhiteSmoke;overflow-y:auto;">
+        <div class="row">
+            <div class="col-12">
+                <h5>{{ _('An unexpected error has occurred') }}</h5>
+                <p>{{ _('Sorry for the inconvenience! Please, go back to the') }}
+                   <a href="{{ url_for('index') }}">{{ _('start of the Covid Section') }}</a>.</p>
+            </div>
+        </div>
+    </div>
 {% endblock %}

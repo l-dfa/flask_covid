@@ -1,5 +1,6 @@
 <html lang="en">
     <head>
+        <meta charset="utf-8">
         {% if title %}
             <title>{{ title }}</title>
         {% else %}
@@ -12,6 +13,7 @@
         
         <!-- warning: use 'url_for' to get static resources, otherwise it could fail on some template(s) -->
         <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
         <link rel="icon" type="static/images/ico" href="{{ url_for('static', filename='images/favicon.ico') }}" />
         <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/pygments.css') }}">
@@ -50,7 +52,9 @@
 
         
         <!-- Core SCRIPTS - Always present - jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="{{ url_for('static', filename='js/jquery-3.5.0.js') }}"></script>
+         <!-- with jquery-3.5.0, collapse don't work in bootstrap 4 -->
+        <!-- <script src="{{ url_for('static', filename='js/jquery-3.5.0.js') }}"></script> -->
+        <script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
         <!-- Custom SCRIPTS - Include with every page -->

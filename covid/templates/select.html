@@ -1,20 +1,39 @@
 {% extends "base.html" %}
 
+{% set TOOLTIP_TITLE = _('To select more items, hold the Ctrl key while click on them') %}
+
 {% block content %}
     <div class="container" style="background-color:WhiteSmoke;overflow-y:auto;">
         <form action="" method="post" novalidate>
+            <div class="row">
+                <div class="col-12">
+                    <h5>{{ _('Please, select below the informations you wish to plot') }}</h5>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-4">
                     <div class="row">
                         <div class="col-md-12">
                         {{ form.hidden_tag() }}
-                        <h5>{{ _('Select what kind of information') }}...</h5>
-                        <p>... {{ _('you wish to plot for every country') }}.</p>
+                        <p>{{ _('Here there are the') }} <span  style="font-style: italic;text-decoration: underline;">{{_('kind of information') }}</span>
+                           {{_('you could display for every country') }}.
+                           <a data-toggle="collapse" href="#explainInfo">{{ _('More info') }} ...</a>
+                        </p>
+                        <div class="collapse" id="explainInfo">
+                            <p style="border: 1px solid; border-radius: 5px;">
+                            <span style="font-weight: bold;">cases</span> {{ _('are the cumulative cases positive to the infection; while') }},
+                            <span style="font-weight: bold;">deaths</span> {{ _('are the cumulative number of persons deceased due to the infection') }}.
+                            </p>
+                        </div>
                         <p>
                             {# {{ form.fields.label }}<br> #}
-                            {{ form.fields(size=2, **{'data-toggle': 'tooltip',
-                                                      'data-placement': 'top',
-                                                      'title': _('To select more types of informations, hold the Ctrl key while click on the chosen type')}) }}<br>
+                            {{ form.fields(size=2, **{ 'data-toggle': 'tooltip',
+                                                       'data-placement': 'top',
+                                                       'data-delay': 1500,
+                                                       'title': TOOLTIP_TITLE
+                                                     }
+                                           )
+                            }}<br>
                             {% for error in form.fields.errors %}
                             <span style="color: red;">[{{ error }}]</span>
                             {% endfor %}
@@ -23,8 +42,18 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <h5>{{ _('Select what kind of geographycal entity') }}...</h5>
-                            <p>... {{ _('you wish to plot') }}.</p>
+                            <p>{{ _('Here you could choose the') }} <span  style="font-style: italic;text-decoration: underline;">{{_('type of geographical entity') }}</span>
+                               {{_('you want use to select') }}.
+                               <a data-toggle="collapse" href="#explainGeo">{{ _('More info') }} ...</a>
+                            </p>
+                        <div class="collapse" id="explainGeo">
+                            <p style="border: 1px solid; border-radius: 5px;">
+                            <span style="font-weight: bold;">nations</span> {{ _('enable the box to select from countries and territories; while') }},
+                            <span style="font-weight: bold;">continents</span> {{ _('enable the box to select what continent(s) to display.') }}.
+                            <br>
+                            {{_('Continents definitions (so: what countries are in every continents) are from United Nations')}}.
+                            </p>
+                        </div>
                             <p>
                                 {# {{ form.fields.label }}<br> #}
                                 {{ form.contest(**{ 'id':    'contest',
@@ -35,19 +64,17 @@
                                 <span style="color: red;">[{{ error }}]</span>
                                 {% endfor %}
                             </p>
-                            <p id="jslog"></p>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5">
-                    <h5>{{ _('Select one country') }}...</h5>
-                    <p>... {{ _('or more countries') }}.</p>
+                <div class="col-md-6">
+                    <p> <span  style="font-style: italic;text-decoration: underline;">{{ _('Countries and territories') }}</span></p>
                     <p>
                         {# {{ form.countries.label }}<br> #}
                         {{ form.countries(size=22, **{ 'id':       'nations',
                                                        'data-toggle':    'tooltip',
-                                                       'data-placement': 'top',
-                                                       'title': _('To select more nations, hold the Ctrl key while click on them')
+                                                       'data-delay': 1500,
+                                                       'title':    TOOLTIP_TITLE
                                                      }
                                          ) }}<br>
                         {% for error in form.countries.errors %}
@@ -55,16 +82,15 @@
                         {% endfor %}
                     </p>
                 </div>
-                <div class="col-md-3">
-                    <h5>{{ _('Select one continent') }}...</h5>
-                    <p>... {{ _('or more continents') }}.</p>
+                <div class="col-md-2">
+                    <p> <span  style="font-style: italic;text-decoration: underline;">{{ _('Continents') }}</span></p>
                     <p>
                         {# {{ form.continents.label }}<br> #}
                         {{ form.continents(size=6, **{ 'id':       'continents',
                                                        'disabled': 'true',
                                                        'data-toggle':    'tooltip',
-                                                       'data-placement': 'top',
-                                                       'title': _('To select more continents, hold the Ctrl key while click on them')
+                                                       'data-delay': 1500,
+                                                       'title': TOOLTIP_TITLE
                                                      }
                                           ) }}<br>
                         {% for error in form.continents.errors %}
@@ -75,7 +101,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <p>{{ form.submit() }}</p>
+                    <p>{{ form.submit(**{'class': 'btn btn-primary'}) }}</p>
                 </div>
             </div>
         </form>
@@ -84,22 +110,23 @@
 
 
 {% block javascript %}
-    <script type="text/javascript">$( function (){$('[data-toggle="tooltip"]').tooltip()} )</script>
     <script>
-    $(function() {
-        $('#contest li').click( function() {
-            var in_contest = $("input[name=contest]:checked").val();
-            //console.log(in_contest);
-            if(in_contest=='nations'){
-                document.getElementById('nations').disabled = false;
-                document.getElementById('continents').disabled = true;
-                document.getElementById('continents').selectedIndex = -1
-                }
-            else{
-                document.getElementById('nations').disabled = true;
-                document.getElementById('nations').selectedIndex = -1;
-                document.getElementById('continents').disabled = false;
-                }
-            }) })
+        $(function (){$('[data-toggle="tooltip"]').tooltip()} )</script>
+    <script>
+        $(function() {
+            $('#contest li').click( function() {
+                var in_contest = $("input[name=contest]:checked").val();
+                //console.log(in_contest);
+                if(in_contest=='nations'){
+                    document.getElementById('nations').disabled = false;
+                    document.getElementById('continents').disabled = true;
+                    document.getElementById('continents').selectedIndex = -1
+                    }
+                else{
+                    document.getElementById('nations').disabled = true;
+                    document.getElementById('nations').selectedIndex = -1;
+                    document.getElementById('continents').disabled = false;
+                    }
+                }) })
     </script>
 {% endblock %}

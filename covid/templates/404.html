@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ _('File Not Found') }}</h1>
-    <p><a href="{{ url_for('index') }}">{{ _('Covid Section') }}</a></p>
+
+    <div class="container" style="background-color:WhiteSmoke;overflow-y:auto;">
+        <div class="row">
+            <div class="col-12">
+                <h5>{{ _('File Not Found') }}.</h5>
+                <p>{{ _('Please, go back to the') }} <a href="{{ url_for('index') }}">{{ _('start of the Covid Section') }}</a>.</p>
+            </div>
+        </div>
+    </div>
 {% endblock %}

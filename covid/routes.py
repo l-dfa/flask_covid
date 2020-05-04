@@ -22,7 +22,7 @@ from flask_babel import get_locale
 from markupsafe import escape
 from matplotlib.figure import Figure
 
-# import appllication modules
+# import application modules
 from covid       import app, nations
 from covid.forms import SelectForm
 
@@ -113,7 +113,7 @@ def select():
     form.countries.choices = nations.get_for_select()
     
     if form.validate_on_submit():
-        # contest: nations or continent
+        # check contest: nations or continent
         contest = form.contest.data[:]
         if contest == 'nations':
             ids = '-'.join(form.countries.data)             # here build string with nations ids: e.g. it-fr-nl
@@ -205,6 +205,12 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
         raise ValueError(_('%(function)s: these countries/continents are unknown: %(unknown)s', function=fname, unknown=unknown))
         
     # end of parameters checks
+    continents_composition = None
+    if contest=='continents':
+        #breakpoint()                  #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        continents_composition = dict()
+        for continent in country_names:
+            continents_composition[continent] = nations[continent].copy()
     threshold = 0
     
     img_data, threshold = draw_nations(df, country_name_field, country_names, fields, normalize=normalize, overlap=overlap)
@@ -218,6 +224,7 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
                            title=title,
                            columns=columns,
                            countries=country_names,
+                           continents_composition=continents_composition,
                            overlap=overlap,
                            threshold=threshold,
                            img_data = img_data,
