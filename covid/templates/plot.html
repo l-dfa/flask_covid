@@ -10,12 +10,18 @@
                         <h3>{{ _('Time trend of ...')}} </h3>
                             <p> {{ _('... these observations related to Covid-19') }}:</p>
                             <ul>
-                            {% if 'cases' in columns %}
-                                <li>{{ _('total positive cases') }}</li>
-                            {% endif %}
-                            {% if 'deaths' in columns %}
-                                <li>{{ _('total number of deaths') }}</li>
-                            {% endif %}
+                            {% for column in columns %}
+                                <li>{{ all_fields[column]['short']}}
+                                
+                                    <a data-toggle="collapse" href="#explain{{column}}">{{ _('More info') }} ...</a>
+                                    <br>
+                                    <div class="collapse" id="explain{{column}}">
+                                        <p style="border: 1px solid; border-radius: 5px;">
+                                        <span style="font-weight: bold;">{{column}}</span> {{ all_fields[column]['explanation'] }}
+                                    </div>
+
+                                </li>
+                            {% endfor %}
                             </ul>
                         </h3>
                         {% if countries %}

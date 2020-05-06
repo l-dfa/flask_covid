@@ -20,14 +20,17 @@
                            <a data-toggle="collapse" href="#explainInfo">{{ _('More info') }} ...</a>
                         </p>
                         <div class="collapse" id="explainInfo">
+                        
                             <p style="border: 1px solid; border-radius: 5px;">
-                            <span style="font-weight: bold;">cases</span> {{ _('are the cumulative cases positive to the infection; while') }},
-                            <span style="font-weight: bold;">deaths</span> {{ _('are the cumulative number of persons deceased due to the infection') }}.
+                            {% for field in all_fields.keys() %}
+                                <span style="font-weight: bold;">{{field}}</span> {{ all_fields[field]['explanation'] }}{% if loop.index != loop.length %};<br>{% endif%}
+                            {% endfor %}.
                             </p>
+                            
                         </div>
                         <p>
                             {# {{ form.fields.label }}<br> #}
-                            {{ form.fields(size=2, **{ 'data-toggle': 'tooltip',
+                            {{ form.fields(size=3, **{ 'data-toggle': 'tooltip',
                                                        'data-placement': 'top',
                                                        'data-delay': 1500,
                                                        'title': TOOLTIP_TITLE
@@ -43,7 +46,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <p>{{ _('Here you could choose the') }} <span  style="font-style: italic;text-decoration: underline;">{{_('type of geographical entity') }}</span>
-                               {{_('you want use to select') }}.
+                               {{_('you want to select') }}.
                                <a data-toggle="collapse" href="#explainGeo">{{ _('More info') }} ...</a>
                             </p>
                         <div class="collapse" id="explainGeo">

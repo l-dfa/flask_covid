@@ -40,7 +40,21 @@ COLORS=['tab:blue',
         'tab:olive',
         'tab:cyan']
         
-FIELDS_CHOICES = [('1', 'cases'), ('2', 'deaths'),]
+FIELDS_CHOICES = [('1', 'cases'), ('2', 'deaths'),('3','d²cases/dt²')]
+FIELDS = {
+    'cases':  {'id': '1',
+               'explanation': _l('are the cumulative  cases positive to the infection'),
+               'short': _('cumulative positive cases'),
+              },
+    'deaths': {'id': '2', 
+               'explanation': _l('are the cumulative number of persons deceased due to the infection'),
+               'short': _('cumulative number of deaths'),
+              },
+    'd²cases_dt²': {'id': '3', 
+                    'explanation': _l('is the second derivative of cumulative positive cases; this indicates if the cases curve has upward or downward concavity'),
+                    'short': _l("concavity's orientation of cumulative positive cases"),
+                   },
+}
 
 
 # European Union: 27 countries
@@ -105,7 +119,8 @@ def select():
     
     app.logger.debug('select()')
     form = SelectForm()
-    form.fields.choices = FIELDS_CHOICES.copy()
+    #form.fields.choices = FIELDS_CHOICES.copy()
+    form.fields.choices = list(zip([FIELDS[key]['id'] for key in FIELDS.keys()], FIELDS.keys()))
     # to set a default, this does not work; we need to use the "default" parameter in the class, or set data (see below)
     #form.fields.default = ['1',]
     form.contest.choices = [('nations','nations',), ('continents', 'continents',),]
@@ -113,7 +128,8 @@ def select():
     form.countries.choices = nations.get_for_select()
     
     if form.validate_on_submit():
-        # check contest: nations or continent
+
+        # check contest: nations or continents
         contest = form.contest.data[:]
         if contest == 'nations':
             ids = '-'.join(form.countries.data)             # here build string with nations ids: e.g. it-fr-nl
@@ -121,9 +137,12 @@ def select():
             ids = '-'.join(form.continents.data)             # here build string with continents ids: e.g. Asia-Europe
         else:
             raise ValueError(_('%(function)s: %(contest)s is not a valid contest', function='select', contest=contest))
+            
         # chaining names of fields to plot
-        columns = [name for code, name in FIELDS_CHOICES if code in form.fields.data ]
+        #columns = [name for code, name in FIELDS_CHOICES if code in form.fields.data ]
+        columns = [name for name in FIELDS.keys() if FIELDS[name]['id'] in form.fields.data ]
         columns = '-'.join(columns)
+        
         # type of values: normal or normalized
         normalize = False  #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CHANGE, this will be from form
         overlap   = False  #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CHANGE, this will be from form
@@ -140,9 +159,11 @@ def select():
                                 overlap=overlap
                                )
                        )
+
     #form.fields.data = ['1']                            # this sets a default value
     return render_template('select.html', 
                            title=_('Select country'), 
+                           all_fields=FIELDS,
                            form=form,
                            nations=nations.get_for_list()
                           )
@@ -207,7 +228,6 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
     # end of parameters checks
     continents_composition = None
     if contest=='continents':
-        #breakpoint()                  #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         continents_composition = dict()
         for continent in country_names:
             continents_composition[continent] = nations[continent].copy()
@@ -223,6 +243,7 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
     return render_template('plot.html',
                            title=title,
                            columns=columns,
+                           all_fields=FIELDS,
                            countries=country_names,
                            continents_composition=continents_composition,
                            overlap=overlap,
@@ -237,10 +258,14 @@ def draw_nations(df, country_name_field, country_names, fields, normalize=False,
     app.logger.debug(fname)
     
     fields = fields.split('-')                         # list of fields to plot
-    allowed = {'cases', 'deaths'}
+    allowed = set(list(FIELDS.keys()))
     if set(fields) - allowed:                          # some fields aren't allowed
         notallowed = set(fields)-allowed
         raise ValueError(_('%(function)s: these fields are not allowed: %(notallowed)s', function=fname, notallowed=notallowed))
+
+    # adding d2cases_dt2
+    if 'd²cases_dt²' in fields:
+        df['d²cases_dt²'] = df['cases'] - df['cases'].shift(-1)
 
     if type(normalize) is not type(True):
         raise ValueError(_('%(function)s: on parameter <normalize>', function=fname))
@@ -279,28 +304,47 @@ def draw_nations(df, country_name_field, country_names, fields, normalize=False,
     if sdf1 is None:
         raise ValueError(_('%(function)s: got an empty dataframe from pivot', function=fname))
     
-    sdf1 = sdf1.cumsum()
+    #breakpoint()        #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    #sdf1 = sdf1.cumsum()
+    tmpfields = fields[:]
+    if 'd²cases_dt²' in fields:
+        tmpfields.remove('d²cases_dt²')
+    for field in tmpfields:
+        sdf1[field] = sdf1[field].cumsum()
     
     # fighting for a good picture
     fig = Figure(figsize=(9,7))
-    ax = fig.subplots()
+    if 'd²cases_dt²' in fields:
+        ax = fig.add_axes([0.1,0.35,0.8,0.6])  # left, bottom, width, height
+        ax2 = fig.add_axes([0.1,0.20,0.8,0.15], sharex=ax)
+    else:
+        ax = fig.subplots()
+    
     xlabelrot = 80
     title  = _l('Observations about Covid-19 outbreak')
     ylabel = _l('number of cases') if not normalize else _l('rate to population')
+    y2label = _l('n.of cases')
     xlabel = _l('date') if not overlap else _l('days from overlap point')
     
-    fig = generate_figure(ax, sdf1, country_names, columns=fields)
+    fig = generate_figure(ax, sdf1, country_names, columns=tmpfields)
     
     ax.grid(True, linestyle='--')
     ax.legend()
-    ax.tick_params(axis='x', labelrotation=xlabelrot)
-    
     ax.set_title (title)
-    ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    fig.subplots_adjust(bottom=0.2)
-
-
+    if 'd²cases_dt²' not in fields:
+        ax.tick_params(axis='x', labelrotation=xlabelrot)
+        ax.set_xlabel(xlabel)
+        fig.subplots_adjust(bottom=0.2)
+    
+    if 'd²cases_dt²' in fields:
+        fig = generate_figure(ax2, sdf1, country_names, columns=['d²cases_dt²'])
+        ax2.set_ylabel(y2label)
+        ax2.tick_params(axis='x', labelrotation=xlabelrot)
+        ax2.grid(True, linestyle='--')
+        ax2.legend()
+        ax2.set_xlabel(xlabel)
+    
     # Save it to a temporary buffer.
     buf = StringIO()
     fig.savefig(buf, format="svg")
