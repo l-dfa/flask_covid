@@ -12,12 +12,133 @@ from flask.cli import AppGroup
 from flask_babel import Babel
 from config import Config
 
+# + ldfa,2020-05-11 geographical areas definitions.
+# in case of federation (EU) key is 'countriesAndTerritories' field
+AREAS = {'European_Union': {'contest': 'nations',
+                            'geoId':      'EU',
+                            'countryterritoryCode': 'EU',
+                            'continentExp': 'Europe',
+                            'nations': { "AT": "Austria",
+                                         "BE": "Belgium",  
+                                         "BG": "Bulgaria",  
+                                         "HR": "Croatia",  
+                                         "CY": "Cyprus",  
+                                         "CZ": "Czechia",  
+                                         "DK": "Denmark",  
+                                         "EE": "Estonia",  
+                                         "FI": "Finland",  
+                                         "FR": "France",  
+                                         "DE": "Germany",  
+                                         "EL": "Greece", 
+                                         "HU": "Hungary", 
+                                         "IE": "Ireland", 
+                                         "IT": "Italy", 
+                                         "LV": "Latvia", 
+                                         "LT": "Lithuania", 
+                                         "LU": "Luxembourg", 
+                                         "MT": "Malta", 
+                                         "NL": "Netherlands", 
+                                         "PL": "Poland", 
+                                         "PT": "Portugal", 
+                                         "RO": "Romania", 
+                                         "SK": "Slovakia", 
+                                         "SI": "Slovenia", 
+                                         "ES": "Spain", 
+                                         "SE": "Sweden", 
+                                       },
+                           },
+         'Central_America':{'contest': 'continents',
+                          'geoId':   'Central_America',                 # MUST be equal to name
+                          'countryterritoryCode': 'Central_America',
+                          'continentExp': 'Central_America',            # MUST be equal to name
+                          'nations': { "BZ": "Belize",
+                                       "CR": "Costa_Rica",
+                                       "SV": "El_Salvador",
+                                       "GT": "Guatemala",
+                                       "HN": "Honduras",
+                                       "NI": "Nicaragua",
+                                       "PA": "Panama",
+                                     },
+                         },
+         'North_America':{'contest': 'continents',
+                          'geoId':   'North_America',                 # MUST be equal to name
+                          'countryterritoryCode': 'North_America',
+                          'continentExp': 'North_America',            # MUST be equal to name
+                          'nations': { "CA": "Canada",
+                                       "US": "United_States_of_America",
+                                       "AG": "Antigua_and_Barbuda",
+                                       "BS": "Bahamas",
+                                       "BB": "Barbados",
+                                       "BZ": "Belize",
+                                       "CU": "Cuba",
+                                       "DM": "Dominica",
+                                       "DO": "Dominican_Republic",
+                                       "GD": "Grenada",
+                                       "HT": "Haiti",
+                                       "JM": "Jamaica",
+                                       "MX": "Mexico",
+                                       "KN": "Saint_Kitts_and_Nevis",
+                                       "LC": "Saint_Lucia",
+                                       "VC": "Saint_Vincent_and_the_Grenadines",
+                                       "TT": "Trinidad_and_Tobago",
+                                       "AI": "Anguilla",
+                                       "BM": "Bermuda",
+                                       "VG": "British_Virgin_Islands",
+                                       "KY": "Cayman_Islands",
+                                       "MS": "Montserrat",
+                                       "PR": "Puerto_Rico",
+                                       "TC": "Turks_and_Caicos_islands",
+                                       "VI": "United_States_Virgin_Islands",
+                                       "BQ": "Bonaire, Saint Eustatius and Saba",
+                                       "CW": "Curaçao",
+                                       "GL": "Greenland",
+                                       "SX": "Sint_Maarten",
+                                     },
+                         },
+         'South_America':{'contest': 'continents',
+                          'geoId':   'South_America',                 # MUST be equal to name
+                          'countryterritoryCode': 'South_America',
+                          'continentExp': 'South_America',            # MUST be equal to name
+                          'nations': { "CO": "Colombia",
+                                       "VE": "Venezuela",
+                                       "GY": "Guyana",
+                                       "SR": "Suriname",
+                                       "BR": "Brazil",
+                                       "PY": "Paraguay",
+                                       "UY": "Uruguay",
+                                       "AR": "Argentina",
+                                       "CL": "Chile",
+                                       "BO": "Bolivia",
+                                       "PE": "Peru",
+                                       "EC": "Ecuador",
+                                       "FK": "Falkland_Islands_(Malvinas)",
+                                       #"GF": "French Guiana",
+                                     },
+                         },
+        }
+
 
 class Nations(object):
+    '''an istance of this class lists all nations present in dataframe,
+    with their continent
+    
+    remarks: it uses a dictionary with this structure:
+        {continent_name: {nation_id: nation_name,
+                          nation_id: nation_name,
+                          ...
+                         }
+         ...
+        }
+    '''
 
-    def __init__(self):
-        #self.__n__ = {id: name for id, name in (('IT', 'Italy',), ('ES', 'Spain',), ('GE', 'Germany',), ('FR','France',), ('UK', 'United Kingdom',),)}
+    def __init__(self, csv_file):
         self.__n__ = dict()
+        
+        df = pd.read_csv(csv_file)
+        cdf = df[['countriesAndTerritories', 'geoId', 'continentExp']].drop_duplicates()
+        for row, c in cdf.iterrows():           # row, country:(name, id,, continent)
+            self.add_nation(c[2], c[1], c[0])      # continent, id, name
+
 
     def __setitem__(self, key, item):
         self.__n__[key] = item
@@ -33,6 +154,12 @@ class Nations(object):
 
     def __delitem__(self, key):
         del self.__n__[key]
+
+    def get(self, key, default=None):
+        if key in self.__n__:
+            return self.__n__[key]
+        else:
+            return None
 
     def has_key(self, k):
         return k in self.__n__
@@ -53,7 +180,7 @@ class Nations(object):
         return self.__n__.pop(*args)
 
     def __cmp__(self, dict_):
-        return self.__cmp__(self.__n__, n_)
+        return self.__cmp__(self.__n__, dict_)
 
     def __contains__(self, item):
         return item in self.__n__
@@ -62,7 +189,7 @@ class Nations(object):
         return iter(self.__n__)
 
     def __unicode__(self):
-        return unicode(repr(self.__n__))
+        return repr(self.__n__)
 
     def get_for_select(self, continents=None):
         '''create a list of 2-tuple (id,nations,) of indicated continents
@@ -144,20 +271,20 @@ class Nations(object):
         return name
 
 
-def make_nations():
-    '''create Nations from dataframe
-    
-    params: df   pandas dataframe - as from ECDC
-    
-    returns: n   istance of Nations
-    '''
-    df = pd.read_csv(app.config['DATA_FILE'])
-    n = Nations()
-    cdf = df[['countriesAndTerritories', 'geoId', 'continentExp']].drop_duplicates()
-    for row, c in cdf.iterrows():           # row, country:(name, id,, continent)
-        #n[c[1]] = c[0]
-        n.add_nation(c[2], c[1], c[0])      # continent, id, name
-    return n
+#def make_nations():
+#    '''create Nations from dataframe
+#    
+#    params: df   pandas dataframe - as from ECDC
+#    
+#    returns: n   istance of Nations
+#    '''
+#    df = pd.read_csv(app.config['DATA_FILE'])
+#    n = Nations()
+#    cdf = df[['countriesAndTerritories', 'geoId', 'continentExp']].drop_duplicates()
+#    for row, c in cdf.iterrows():           # row, country:(name, id,, continent)
+#        #n[c[1]] = c[0]
+#        n.add_nation(c[2], c[1], c[0])      # continent, id, name
+#    return n
 
 
 app = Flask(__name__)            # warn.here sequence of actions count
@@ -210,7 +337,8 @@ def compile():
 app.cli.add_command(translate_cli)
 
 
-nations = make_nations()
+#nations = make_nations()
+nations = Nations(app.config['DATA_FILE'])
 
 ## START DEBUGGING
 #continents = list(nations.keys())

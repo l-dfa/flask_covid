@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-05-06 23:47+0200\n"
-"PO-Revision-Date: 2020-05-07 00:01+0200\n"
+"POT-Creation-Date: 2020-05-15 20:15+0200\n"
+"PO-Revision-Date: 2020-05-15 20:15+0200\n"
 "Last-Translator: \n"
 "Language: it\n"
 "Language-Team: it <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr "Tipo di entità"
 msgid "Countries"
 msgstr "Nazioni"
 
-#: covid/forms.py:13 covid/routes.py:238
+#: covid/forms.py:13 covid/routes.py:367
 msgid "plot"
 msgstr "disegna"
 
@@ -74,78 +74,78 @@ msgstr ""
 msgid "concavity's orientation of cumulative positive cases"
 msgstr "orientamento della concavità dei casi complessivi positivi"
 
-#: covid/routes.py:107
+#: covid/routes.py:163
 msgid "Covid: time trend analysis"
 msgstr "Covid: analisi delle tendenze temporali"
 
-#: covid/routes.py:139
+#: covid/routes.py:201
 #, python-format
 msgid "%(function)s: %(contest)s is not a valid contest"
 msgstr "%(function)s: %(contest)s non è un contesto valido"
 
-#: covid/routes.py:165
+#: covid/routes.py:229
 msgid "Select country"
 msgstr "Seleziona la nazione"
 
-#: covid/routes.py:213
+#: covid/routes.py:277
 #, python-format
 msgid "%(function)s: contest %(contest)s is not allowed: "
 msgstr "%(function)s: il contesto %(contest)s non è ammesso: "
 
-#: covid/routes.py:226
+#: covid/routes.py:312
 #, python-format
 msgid "%(function)s: these countries/continents are unknown: %(unknown)s"
 msgstr "%(function)s: queste nazioni/continenti sono sconosciuti: %(unknown)s"
 
-#: covid/routes.py:238
+#: covid/routes.py:367
 msgid "overlap"
 msgstr "sovrapporre"
 
-#: covid/routes.py:264
+#: covid/routes.py:393
 #, python-format
 msgid "%(function)s: these fields are not allowed: %(notallowed)s"
 msgstr "%(function)s: questi campi non sono ammessi: %(notallowed)s"
 
-#: covid/routes.py:271
+#: covid/routes.py:400
 #, python-format
 msgid "%(function)s: on parameter <normalize>"
 msgstr "%(function)s: nel parametro <normalize>"
 
-#: covid/routes.py:276
+#: covid/routes.py:405
 #, python-format
 msgid "%(function)s: on parameter <overlap>"
 msgstr "%(function)s: nel parametro <overlap>"
 
-#: covid/routes.py:305
+#: covid/routes.py:434
 #, python-format
 msgid "%(function)s: got an empty dataframe from pivot"
 msgstr "%(function)s: ricevuto un dataframe vuoto dal pivot"
 
-#: covid/routes.py:324
+#: covid/routes.py:453
 msgid "Observations about Covid-19 outbreak"
 msgstr "Osservazioni sulla epidemia di Covid-19"
 
-#: covid/routes.py:325
+#: covid/routes.py:454
 msgid "number of cases"
 msgstr "numero di casi"
 
-#: covid/routes.py:325
+#: covid/routes.py:454
 msgid "rate to population"
 msgstr "rapporto rispetto la popolazione"
 
-#: covid/routes.py:326
+#: covid/routes.py:455
 msgid "n.of cases"
 msgstr "n.di casi"
 
-#: covid/routes.py:327
+#: covid/routes.py:456
 msgid "date"
 msgstr "data"
 
-#: covid/routes.py:327
+#: covid/routes.py:456
 msgid "days from overlap point"
 msgstr "giorni dal punto di sovrapposizione"
 
-#: covid/routes.py:370
+#: covid/routes.py:495
 #, python-format
 msgid "%(column)s of %(country)s"
 msgstr "%(column)s di %(country)s"
@@ -298,6 +298,39 @@ msgstr ""
 #: covid/templates/index.html:43
 msgid "Cheers"
 msgstr "Saluti"
+
+#: covid/templates/index.html:49
+msgid "History"
+msgstr "Storia"
+
+#: covid/templates/index.html:53
+msgid "added European Union in nations"
+msgstr "aggiunta l'Unione Europea tra le nazioni"
+
+#: covid/templates/index.html:54
+msgid "added South, Central and North America sub continents"
+msgstr "aggiunti i subcontinenti del Sud, Centro e Nord America"
+
+#: covid/templates/index.html:56
+msgid ""
+"added the second derivative of total positive cases to show the curve concavity"
+msgstr ""
+"aggiunta la derivata seconda dei casi positivi cumulativi per mostrare la "
+"concavità della curva"
+
+#: covid/templates/index.html:57
+msgid "a better user interface to select nations"
+msgstr "una migliore interfaccia utente per selezionare le nazioni"
+
+#: covid/templates/index.html:59
+msgid "added the comparison between continents"
+msgstr "aggiunta la comparazione tra continenti"
+
+#: covid/templates/index.html:61
+msgid "user can choose what infos to plot: positive cases and/or deaths"
+msgstr ""
+"l'utente può scegliere quali informazioni tracciare: i casi positivi, e/o i "
+"decessi"
 
 #: covid/templates/navbar-original.html:18 covid/templates/navbar.html:17
 msgid "Covid Section"

@@ -23,7 +23,7 @@ from markupsafe import escape
 from matplotlib.figure import Figure
 
 # import application modules
-from covid       import app, nations
+from covid       import app, nations, AREAS
 from covid.forms import SelectForm
 
 # here we go
@@ -57,36 +57,92 @@ FIELDS = {
 }
 
 
-# European Union: 27 countries
-EU = (
-    "Austria",
-    "Belgium",  
-    "Bulgaria",  
-    "Croatia",  
-    "Cyprus",  
-    "Czechia",  
-    "Denmark",  
-    "Estonia",  
-    "Finland",  
-    "France",  
-    "Germany",  
-    "Greece", 
-    "Hungary", 
-    "Ireland", 
-    "Italy", 
-    "Latvia", 
-    "Lithuania", 
-    "Luxembourg", 
-    "Malta", 
-    "Netherlands", 
-    "Poland", 
-    "Portugal", 
-    "Romania", 
-    "Slovakia", 
-    "Slovenia", 
-    "Spain", 
-    "Sweden", 
-)
+# + ldfa 2020-05-11 managing geographic areas
+def areas_get_nation_name(geoId, contest, areas=None):
+    '''get name given id from a 'geographic area definition' data structure
+    
+    params:
+       - geoId                 str - id of area (2 letters)
+       - contest               str - 'nations' | 'continents'
+       - areas                 dict of dict - e.g. {'European_Union': {'contest': 'nations',
+                                                                       'geoId':   'EU',
+                                                                       'countryterritoryCode': 'EU',
+                                                                       'continentExp': 'Europe',
+                                                                       'nations': ( "Austria", ...)
+                                                                      },
+                                                    'North_America':{'contest': 'continents',
+                                                                     'geoId':   'North_America',
+                                                                     'countryterritoryCode': None,
+                                                                     'continentExp': 'North_America',
+                                                                     'nations': ( "Canada", ...),
+                                                                    },
+                                                    ...
+                                                   }
+    
+    return str: nation or continent name of given geoId;
+           None if geoId not found
+    '''
+    if areas is None: areas = AREAS
+    for k, v in areas.items():
+        if v['contest'] == contest and v['geoId'] == geoId:
+            return k
+    return None
+
+# + ldfa 2020-05-15 managing geographic areas
+def areas_get_key_from_id(geoId, contest, areas=None):
+    '''get key given id from a 'geographic area definition' data structure
+    
+    params:
+       - geoId                 str - id of area (2 letters)
+       - contest               str - 'nations' | 'continents'
+       - areas                 dict of dict - see: areas_get_nation_name(...) comment
+    
+    return str: area item key
+           None if geoId not found
+    '''
+    if areas is None: areas = AREAS
+    for k, v in areas.items():
+        if v['contest'] == contest and v['geoId'] == geoId:
+            return k
+    return None
+
+## + ldfa 2020-05-15 managing geographic areas
+#def areas_get_nations_ids(geoId, contest, areas=None):
+#    '''get ids of nations composing given id from a 'geographic area definition' data structure
+#    
+#    params:
+#       - geoId                 str - id of area (2 letters)
+#       - contest               str - 'nations' | 'continents'
+#       - areas                 dict of dict - see: areas_get_nation_name(...) comment
+#    
+#    return list of ids of nations components of area item
+#           None if geoId not found
+#    '''
+#    if areas is None: areas = AREAS
+#    for k, v in areas.items():
+#        if v['contest'] == contest and v['geoId'] == geoId:
+#            return [key for key in v['nations'].keys()]
+#    return None
+
+
+# + ldfa 2020-05-11 managing geographic areas
+def areas_get_names(contest, areas=None):
+    '''get all namee given contest from a 'geographic area definition' data structure
+    
+    params:
+       - contest               str - 'nations' | 'continents'
+       - areas                 dict of dict - see areas_get_nation_name(...) comment
+    
+    return list of str: nations or continents names;
+           None if contest not found
+    '''
+    if areas is None: areas = AREAS
+    names = []
+    for k, v in areas.items():
+        if v['contest'] == contest:
+            names.append(k)
+    if names == []: names= None
+    return names
 
 
 @app.before_request
@@ -124,8 +180,14 @@ def select():
     # to set a default, this does not work; we need to use the "default" parameter in the class, or set data (see below)
     #form.fields.default = ['1',]
     form.contest.choices = [('nations','nations',), ('continents', 'continents',),]
+    
     form.continents.choices = [ (c, c, ) for c in nations.keys()]
+    form.continents.choices.extend( [ (c, c, ) for c in AREAS.keys() if AREAS[c]['contest']=='continents'] )
+    form.continents.choices.sort(key=lambda x: x[1])            # sort by name
+    
     form.countries.choices = nations.get_for_select()
+    form.countries.choices.extend( [ (v['geoId'], c, ) for c, v in AREAS.items() if AREAS[c]['contest']=='nations'] )
+    form.countries.choices.sort(key=lambda x: x[1])            # sort by name
     
     if form.validate_on_submit():
 
@@ -148,8 +210,10 @@ def select():
         overlap   = False  #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CHANGE, this will be from form
         
         ## TEST <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        #contest = 'nations'
+        #ids = 'EU'
         #contest = 'continents'
-        #ids = 'Europe-Asia'
+        #ids = 'North_America'
         
         return redirect(url_for('draw_graph', 
                                 contest=contest, 
@@ -186,7 +250,7 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
         - draw nations deaths
         - draw continents cases
         - draw continents deaths
-        - draw normalized values
+        - N.A. draw normalized values
        '''
     fname = 'draw_graph'
     app.logger.debug('{}({}, {}, {}, {}, {})'.format(fname, contest, ids, fields, normalize, overlap))
@@ -212,27 +276,92 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
     else:
         raise ValueError(_('%(function)s: contest %(contest)s is not allowed: ', function=fname, contest=contest))
         
-    #   check request countries or continents
+    #   countries: list of ids of countries or continents
     countries = ids.split('-')                         # list of ids of nations or continents
-    if contest=='nations':
-        country_names = [ nations.get_nation_name(country) for country in countries]
+    
+    #   regular_countries vs not_regular_countries: select regular countries/continents vs areas items # + ldfa,2020-05-15
+    if contest=='nations':                             # +- ldfa,2020-05-11 added nations from AREAS
+        regular_countries = [ country  for country in countries if nations.get_nation_name(country)]
     else:
-        country_names = countries
+        regular_countries = [ country  for country in countries if nations.get(country)]
+    not_regular_countries =  list(set(countries) - set(regular_countries))
+    
+    #   country_names: getting names from ids
+    if contest=='nations':                             # +- ldfa,2020-05-11 added nations from AREAS
+        #breakpoint()                                              # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        #country_names = []
+        #for country in countries:
+        #    if nations.get_nation_name(country):
+        #        n = nations.get_nation_name(country)
+        #    else:
+        #        n = areas_get_nation_name(country, contest, AREAS)
+        #    country_names.append(n)
+        country_names = [ nations.get_nation_name(country) if nations.get_nation_name(country) is not None else areas_get_nation_name(country, contest, AREAS)  for country in countries]
+    else:
+        country_names = countries         # in case of continents, country_names and identifiers are equals
         
     df = open_data(app.config['DATA_FILE'], pd.read_csv, world_shape)
     checklist = df[country_name_field].drop_duplicates()
+    
+    other_names = areas_get_names(contest, AREAS)       # + ldfa,2020-05-14 added names from AREAS
+    if len(other_names) > 0:
+        other_names = pd.Series(other_names)
+        checklist = checklist.append(other_names, ignore_index=True)
     if set(country_names)-set(checklist):    # some countries aren't in checklist: not good
         unknown = set(country_names)-set(checklist)
         raise ValueError(_('%(function)s: these countries/continents are unknown: %(unknown)s', function=fname, unknown=unknown))
         
-    # end of parameters checks
+    # END   parameters checks
+    
     continents_composition = None
     if contest=='continents':
         continents_composition = dict()
         for continent in country_names:
-            continents_composition[continent] = nations[continent].copy()
+            if continent in nations:
+                continents_composition[continent] = nations[continent].copy()
+            else:                                      # + ldfa,2020-05-11 get nations from areas
+                continents_composition[continent] = AREAS[continent]['nations'].copy() 
     threshold = 0
     
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    #  2020-05-13 TRY UP TO HERE - OK
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    
+    # START working area
+
+    # now, if we have areas items, we need to grow dataframe copying and appending data of that items
+    # remark: areas items ids are listed in not_regular_countries
+
+    for not_regular_country in not_regular_countries:
+        # building a df to aggregate data from component nations ...
+        df_tmp = pd.DataFrame()
+        # ... get component nations ids
+        not_regular_name = areas_get_key_from_id(not_regular_country, contest, AREAS)  # area item name: key to access AREA dict
+        localities = [ k for k in AREAS[not_regular_name]['nations'].keys()]           # ids of countries forming item of area
+        # ... calculating area population
+        df_nrc = df[df['geoId'].isin(localities)]           
+        population = df_nrc[['countriesAndTerritories', 'popData2018']].drop_duplicates().sum()['popData2018']
+        # ... grouping by date and adding new cols to new df
+        grouped = df_nrc.groupby(by='dateRep', as_index=False)
+        df_tmp['dateRep'] = grouped.groups       # 1st col: dates
+        df_tmp = df_tmp.reset_index()            #
+        del df_tmp['index']
+        df_tmp['day'] = df_tmp['dateRep'].map(lambda x: x.day)
+        df_tmp['month'] = df_tmp['dateRep'].map(lambda x: x.month)
+        df_tmp['year'] = df_tmp['dateRep'].map(lambda x: x.year)
+        
+        df_tmp['cases'] = grouped.sum()['cases']
+        df_tmp['deaths'] = grouped.sum()['deaths']
+        
+        df_tmp['countriesAndTerritories'] = not_regular_name[:]
+        df_tmp['geoId']                   = AREAS[not_regular_name]['geoId']
+        df_tmp['countryterritoryCode']    = AREAS[not_regular_name]['countryterritoryCode']
+        df_tmp['popData2018']             = population
+        df_tmp['continentExp']            = AREAS[not_regular_name]['continentExp']
+        # ... new df ready, now we need to append it to the original df
+        df = pd.concat([df, df_tmp])
+    # END   working area
+
     img_data, threshold = draw_nations(df, country_name_field, country_names, fields, normalize=normalize, overlap=overlap)
     
     title = _('overlap') if overlap else _('plot')
