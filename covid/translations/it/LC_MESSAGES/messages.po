@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-05-15 20:15+0200\n"
-"PO-Revision-Date: 2020-05-15 20:15+0200\n"
+"POT-Creation-Date: 2020-05-17 01:44+0200\n"
+"PO-Revision-Date: 2020-05-17 01:50+0200\n"
 "Last-Translator: \n"
 "Language: it\n"
 "Language-Team: it <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr "Tipo di entità"
 msgid "Countries"
 msgstr "Nazioni"
 
-#: covid/forms.py:13 covid/routes.py:367
+#: covid/forms.py:13 covid/routes.py:349
 msgid "plot"
 msgstr "disegna"
 
@@ -74,78 +74,78 @@ msgstr ""
 msgid "concavity's orientation of cumulative positive cases"
 msgstr "orientamento della concavità dei casi complessivi positivi"
 
-#: covid/routes.py:163
+#: covid/routes.py:152
 msgid "Covid: time trend analysis"
 msgstr "Covid: analisi delle tendenze temporali"
 
-#: covid/routes.py:201
+#: covid/routes.py:190
 #, python-format
 msgid "%(function)s: %(contest)s is not a valid contest"
 msgstr "%(function)s: %(contest)s non è un contesto valido"
 
-#: covid/routes.py:229
+#: covid/routes.py:218
 msgid "Select country"
 msgstr "Seleziona la nazione"
 
-#: covid/routes.py:277
+#: covid/routes.py:266
 #, python-format
 msgid "%(function)s: contest %(contest)s is not allowed: "
 msgstr "%(function)s: il contesto %(contest)s non è ammesso: "
 
-#: covid/routes.py:312
+#: covid/routes.py:301
 #, python-format
 msgid "%(function)s: these countries/continents are unknown: %(unknown)s"
 msgstr "%(function)s: queste nazioni/continenti sono sconosciuti: %(unknown)s"
 
-#: covid/routes.py:367
+#: covid/routes.py:349
 msgid "overlap"
 msgstr "sovrapporre"
 
-#: covid/routes.py:393
+#: covid/routes.py:377
 #, python-format
 msgid "%(function)s: these fields are not allowed: %(notallowed)s"
 msgstr "%(function)s: questi campi non sono ammessi: %(notallowed)s"
 
-#: covid/routes.py:400
+#: covid/routes.py:384
 #, python-format
 msgid "%(function)s: on parameter <normalize>"
 msgstr "%(function)s: nel parametro <normalize>"
 
-#: covid/routes.py:405
+#: covid/routes.py:389
 #, python-format
 msgid "%(function)s: on parameter <overlap>"
 msgstr "%(function)s: nel parametro <overlap>"
 
-#: covid/routes.py:434
+#: covid/routes.py:487
 #, python-format
 msgid "%(function)s: got an empty dataframe from pivot"
 msgstr "%(function)s: ricevuto un dataframe vuoto dal pivot"
 
-#: covid/routes.py:453
+#: covid/routes.py:505
 msgid "Observations about Covid-19 outbreak"
 msgstr "Osservazioni sulla epidemia di Covid-19"
 
-#: covid/routes.py:454
+#: covid/routes.py:506
 msgid "number of cases"
 msgstr "numero di casi"
 
-#: covid/routes.py:454
+#: covid/routes.py:506
 msgid "rate to population"
 msgstr "rapporto rispetto la popolazione"
 
-#: covid/routes.py:455
+#: covid/routes.py:507
 msgid "n.of cases"
 msgstr "n.di casi"
 
-#: covid/routes.py:456
+#: covid/routes.py:508
 msgid "date"
 msgstr "data"
 
-#: covid/routes.py:456
+#: covid/routes.py:508
 msgid "days from overlap point"
 msgstr "giorni dal punto di sovrapposizione"
 
-#: covid/routes.py:495
+#: covid/routes.py:547
 #, python-format
 msgid "%(column)s of %(country)s"
 msgstr "%(column)s di %(country)s"
@@ -304,29 +304,35 @@ msgid "History"
 msgstr "Storia"
 
 #: covid/templates/index.html:53
+msgid "added a summary table of data used to draw chosen observations"
+msgstr ""
+"aggiunta una tabella riassuntiva dei dati utilizzati per tracciare le "
+"osservazioni scelte"
+
+#: covid/templates/index.html:56
 msgid "added European Union in nations"
 msgstr "aggiunta l'Unione Europea tra le nazioni"
 
-#: covid/templates/index.html:54
+#: covid/templates/index.html:57
 msgid "added South, Central and North America sub continents"
 msgstr "aggiunti i subcontinenti del Sud, Centro e Nord America"
 
-#: covid/templates/index.html:56
+#: covid/templates/index.html:59
 msgid ""
 "added the second derivative of total positive cases to show the curve concavity"
 msgstr ""
 "aggiunta la derivata seconda dei casi positivi cumulativi per mostrare la "
 "concavità della curva"
 
-#: covid/templates/index.html:57
+#: covid/templates/index.html:60
 msgid "a better user interface to select nations"
 msgstr "una migliore interfaccia utente per selezionare le nazioni"
 
-#: covid/templates/index.html:59
+#: covid/templates/index.html:62
 msgid "added the comparison between continents"
 msgstr "aggiunta la comparazione tra continenti"
 
-#: covid/templates/index.html:61
+#: covid/templates/index.html:64
 msgid "user can choose what infos to plot: positive cases and/or deaths"
 msgstr ""
 "l'utente può scegliere quali informazioni tracciare: i casi positivi, e/o i "
@@ -356,7 +362,7 @@ msgstr "Andamento temporale di ..."
 msgid "... these observations related to Covid-19"
 msgstr "… queste osservazioni sul Covid-19"
 
-#: covid/templates/plot.html:16 covid/templates/plot.html:39
+#: covid/templates/plot.html:15 covid/templates/plot.html:37
 #: covid/templates/select.html:20 covid/templates/select.html:50
 msgid "More info"
 msgstr "Più informazioni"
@@ -369,11 +375,11 @@ msgstr "riguardo queste nazioni"
 msgid "about these continents"
 msgstr "riguardo questi continenti"
 
-#: covid/templates/plot.html:43
+#: covid/templates/plot.html:41
 msgid "Countries in"
 msgstr "Paesi in"
 
-#: covid/templates/plot.html:43
+#: covid/templates/plot.html:41
 msgid "are:"
 msgstr "sono:"
 
@@ -423,6 +429,38 @@ msgstr "le linee di queste nazioni"
 #: covid/templates/plot.html:75
 msgid "the lines of these continents"
 msgstr "le linee di questi continenti"
+
+#: covid/templates/plot.html:90
+msgid "Summary table of data used to build chosen observations to draw"
+msgstr ""
+"Tabella riassuntiva di dati utilizzati per costruire le osservazioni da "
+"tracciare"
+
+#: covid/templates/plot.html:91
+msgid "Hereafter a synthesis of data used to build the former graph"
+msgstr ""
+"Qui di seguito una sistesi dei dai utilizzati per costruire il grafico "
+"precedente"
+
+#: covid/templates/plot.html:92
+msgid ""
+"Specifically, we use daily positive cases to build cumulative positive cases"
+msgstr ""
+"In particolare, utilizziamo i casi positivi giornalieri per calcolare i casi "
+"positivi cumulativi"
+
+#: covid/templates/plot.html:93
+msgid "and daily deaths to build cumulative deaths"
+msgstr "e i decessi giornalieri per calcolare i decessi cumulativi"
+
+#: covid/templates/plot.html:94
+msgid "To summarize data, available days are bound in weeks"
+msgstr ""
+"Per sintetizzare i dati, i giorni disponibili sono raggruppati in settimane"
+
+#: covid/templates/plot.html:95
+msgid "In every week figures are calculated as a mean"
+msgstr "In ogni settimana i dati sono calcolati come media"
 
 #: covid/templates/select.html:3
 msgid "To select more items, hold the Ctrl key while click on them"

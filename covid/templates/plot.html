@@ -12,19 +12,19 @@
                             <ul>
                             {% for column in columns %}
                                 <li>{{ all_fields[column]['short']}}
-                                
                                     <a data-toggle="collapse" href="#explain{{column}}">{{ _('More info') }} ...</a>
                                     <br>
                                     <div class="collapse" id="explain{{column}}">
                                         <p style="border: 1px solid; border-radius: 5px;">
-                                        <span style="font-weight: bold;">{{column}}</span> {{ all_fields[column]['explanation'] }}
+                                            <span style="font-weight: bold;">{{column}}</span> {{ all_fields[column]['explanation'] }}
+                                        </p>
                                     </div>
-
                                 </li>
                             {% endfor %}
                             </ul>
-                        </h3>
+                            
                         {% if countries %}
+                        <div>
                             {% if kwargs.contest == 'nations' %}
                                 <p> {{ _('about these nations') }}:</p>
                             {% else %}
@@ -33,9 +33,7 @@
                             <ul>
                             {%for country in countries %}
                                 <li>{{ country }}
-                                
                                     {% if continents_composition is not none %}
-                                    
                                         <a data-toggle="collapse" href="#explain{{country}}">{{ _('More info') }} ...</a>
                                         <br>
                                         <div class="collapse" id="explain{{country}}">
@@ -44,45 +42,60 @@
                                             {% for nation in continents_composition[country].values() %}
                                                 {{nation}} {% if loop.index != loop.length %}, {% endif%}
                                             {% endfor %}
+                                            </p>
                                         </div>
-                                    
                                     {% endif %}
-                                    
                                 </li>
                             {% endfor %}
                             </ul>
+                        </div>
                         {% endif %}
-                    <div>
-                    {% if overlap %}
-                    <div>
-                        <p>{{ _('Beware of fact the below image overlap the lines of the different') }} 
-                           {% if kwargs.contest == 'nations' %}
-                               {{ _('nations') }}.
-                           {% else %}
-                               {{ _('continents') }}.
-                           {% endif %}
-                        </p>
-                        <p>{{ _('To do so, lines are translated each other by the day where they exceed a treshold of') }}
-                           {{ threshold }} {{ _('cases in a couple of adjacent days') }}. </p>
-                        <p>{{ _('If you wish, you can') }}, <a href="{{ url_for('draw_graph', **kwargs) }}">{{ _('go back to the normal view') }}</a>. </p>
                     </div>
-                    {% elif countries|count > 1 and columns|count == 1 %}
+                    
                     <div>
-                        <p>{{ _('If you wish') }}, <a href="{{ url_for('draw_graph', **kwargs) }}">{{ _('you could overlap') }}</a> 
-                        {% if kwargs.contest == 'nations' %}
-                            {{ _('the lines of these nations') }}.
-                        {% else %}
-                            {{ _('the lines of these continents') }}.
+                        {% if overlap %}
+                            <div>
+                                <p>{{ _('Beware of fact the below image overlap the lines of the different') }} 
+                                   {% if kwargs.contest == 'nations' %}
+                                       {{ _('nations') }}.
+                                   {% else %}
+                                       {{ _('continents') }}.
+                                   {% endif %}
+                                </p>
+                                <p>{{ _('To do so, lines are translated each other by the day where they exceed a treshold of') }}
+                                   {{ threshold }} {{ _('cases in a couple of adjacent days') }}. </p>
+                                <p>{{ _('If you wish, you can') }}, <a href="{{ url_for('draw_graph', **kwargs) }}">{{ _('go back to the normal view') }}</a>. </p>
+                            </div>
+                        {% elif countries|count > 1 and columns|count == 1 %}
+                            <div>
+                                <p>{{ _('If you wish') }}, <a href="{{ url_for('draw_graph', **kwargs) }}">{{ _('you could overlap') }}</a> 
+                                {% if kwargs.contest == 'nations' %}
+                                    {{ _('the lines of these nations') }}.
+                                {% else %}
+                                    {{ _('the lines of these continents') }}.
+                                {% endif %}
+                                </p>
+                            </div>
                         {% endif %}
-                        </p>
+                        {% for key in request.args.keys() %}
+                            <p> {{key}} </p>
+                        {% endfor %}
+                        <div>
+                           {{ img_data|safe }}
+                        </div>
                     </div>
-                    {% endif %}
-                    {% for key in request.args.keys() %}
-                    <p> {{key}} </p>
-                    {% endfor %}
+                {% endif %}
+                {% if html_table %}
                     <div>
-                       {{ img_data|safe }}
-                    </div>
+                        <h5>{{ _('Summary table of data used to build chosen observations to draw') }}.</h5>
+                        <p> {{ _('Hereafter a synthesis of data used to build the former graph') }}.<br>
+                            {{ _('Specifically, we use daily positive cases to build cumulative positive cases') }},
+                            {{ _('and daily deaths to build cumulative deaths') }}.<br>
+                            {{ _('To summarize data, available days are bound in weeks') }}.
+                            {{ _('In every week figures are calculated as a mean') }}.<br>
+                        </p>
+                        <p></p>
+                        {{ html_table|safe }}
                     </div>
                 {% endif %}
             </div>

@@ -271,22 +271,6 @@ class Nations(object):
         return name
 
 
-#def make_nations():
-#    '''create Nations from dataframe
-#    
-#    params: df   pandas dataframe - as from ECDC
-#    
-#    returns: n   istance of Nations
-#    '''
-#    df = pd.read_csv(app.config['DATA_FILE'])
-#    n = Nations()
-#    cdf = df[['countriesAndTerritories', 'geoId', 'continentExp']].drop_duplicates()
-#    for row, c in cdf.iterrows():           # row, country:(name, id,, continent)
-#        #n[c[1]] = c[0]
-#        n.add_nation(c[2], c[1], c[0])      # continent, id, name
-#    return n
-
-
 app = Flask(__name__)            # warn.here sequence of actions count
 translate_cli = AppGroup('translate')
 app.config.from_object(Config)

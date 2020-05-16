@@ -56,6 +56,13 @@ FIELDS = {
                    },
 }
 
+# + ldfa,2020-05-17 to show a summary table of chosen fields
+FIELDS_IN_TABLE = {
+    'cases': 'mean_daily_cases',
+    'deaths': 'mean_daily_deaths',
+    'd²cases_dt²': 'mean_daily_concavity',
+}
+
 
 # + ldfa 2020-05-11 managing geographic areas
 def areas_get_nation_name(geoId, contest, areas=None):
@@ -105,24 +112,6 @@ def areas_get_key_from_id(geoId, contest, areas=None):
         if v['contest'] == contest and v['geoId'] == geoId:
             return k
     return None
-
-## + ldfa 2020-05-15 managing geographic areas
-#def areas_get_nations_ids(geoId, contest, areas=None):
-#    '''get ids of nations composing given id from a 'geographic area definition' data structure
-#    
-#    params:
-#       - geoId                 str - id of area (2 letters)
-#       - contest               str - 'nations' | 'continents'
-#       - areas                 dict of dict - see: areas_get_nation_name(...) comment
-#    
-#    return list of ids of nations components of area item
-#           None if geoId not found
-#    '''
-#    if areas is None: areas = AREAS
-#    for k, v in areas.items():
-#        if v['contest'] == contest and v['geoId'] == geoId:
-#            return [key for key in v['nations'].keys()]
-#    return None
 
 
 # + ldfa 2020-05-11 managing geographic areas
@@ -323,15 +312,8 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
                 continents_composition[continent] = AREAS[continent]['nations'].copy() 
     threshold = 0
     
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    #  2020-05-13 TRY UP TO HERE - OK
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    
-    # START working area
-
     # now, if we have areas items, we need to grow dataframe copying and appending data of that items
     # remark: areas items ids are listed in not_regular_countries
-
     for not_regular_country in not_regular_countries:
         # building a df to aggregate data from component nations ...
         df_tmp = pd.DataFrame()
@@ -358,11 +340,11 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
         df_tmp['countryterritoryCode']    = AREAS[not_regular_name]['countryterritoryCode']
         df_tmp['popData2018']             = population
         df_tmp['continentExp']            = AREAS[not_regular_name]['continentExp']
-        # ... new df ready, now we need to append it to the original df
+        # ... new df ready, now we append it to the original df
         df = pd.concat([df, df_tmp])
-    # END   working area
 
     img_data, threshold = draw_nations(df, country_name_field, country_names, fields, normalize=normalize, overlap=overlap)
+    html_table = table_nations(df, country_name_field, country_names, fields, normalize=normalize, overlap=overlap)
     
     title = _('overlap') if overlap else _('plot')
     kwargs['overlap'] = False if overlap else True    # ready to switch from overlap to not overlap, and vice versa
@@ -378,12 +360,14 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
                            overlap=overlap,
                            threshold=threshold,
                            img_data = img_data,
+                           html_table=html_table,
                            kwargs=kwargs,
                           )
 
-
-def draw_nations(df, country_name_field, country_names, fields, normalize=False, overlap=False):
-    fname = 'draw_nations'
+def prepare_target(df, country_name_field, country_names, fields, normalize=False, overlap=False):
+    '''prepare target dataframe: check arguments and build a very specialized dataframe
+    '''
+    fname = 'prepare_target'
     app.logger.debug(fname)
     
     fields = fields.split('-')                         # list of fields to plot
@@ -408,7 +392,7 @@ def draw_nations(df, country_name_field, country_names, fields, normalize=False,
     sdf = df[(df[country_name_field].isin(country_names))]                # selected dataframe
     
     # building a dataframe with the necessary data
-    edf = pd.DataFrame()                                                  # empty dataframe
+    target = pd.DataFrame()                                                  # empty dataframe
     
     # temporary series to build dates; here as str 'yyyy-mm-dd'
     stemp = (sdf['year'].apply(lambda x:"{:04d}-".format(x)) +
@@ -416,12 +400,81 @@ def draw_nations(df, country_name_field, country_names, fields, normalize=False,
                       sdf['day'].apply(lambda x:"{:02d}".format(x))
                      )
     
-    edf['dateRep'] = stemp.map(lambda x: datetime.strptime(x, '%Y-%m-%d').date()) # date from str to date
+    target['dateRep'] = stemp.map(lambda x: datetime.strptime(x, '%Y-%m-%d').date()) # date from str to date
     
     for field in fields:                                                  # adding fields cases&|deaths
-        edf[field]  = sdf[field]
+        target[field]  = sdf[field]
         
-    edf[country_name_field] = sdf[country_name_field]                     # adding names of countries|continents
+    target[country_name_field] = sdf[country_name_field]                     # adding names of countries|continents
+    
+    return target.copy()
+
+# + ldfa,2020-05-17 to show a summary table of chosen observations
+def table_nations(df, country_name_field, country_names, fields, normalize=False, overlap=False):
+    '''summary table of chosen observations
+    '''
+    fname = 'table_nations'
+    app.logger.debug(fname)
+    
+    edf = prepare_target(df, country_name_field, country_names, fields, normalize=False, overlap=False)
+    fields = fields.split('-')                         # list of fields to manage
+    
+    edf['dateRep'] = pd.to_datetime(edf['dateRep'])
+    edf['week'] = edf['dateRep'].dt.week    # adding week number
+    edf['year'] = edf['dateRep'].dt.year    # adding year
+    #edf = edf.set_index(['year', 'week'])
+    edf = edf.rename(columns=FIELDS_IN_TABLE)
+    edf_avg = edf.groupby(['year','week',country_name_field]).mean()
+    for field in fields:
+        edf_avg
+    sdf1 = pd.pivot_table(edf_avg, index=['year','week'],columns=country_name_field)
+    return sdf1.to_html(buf=None, float_format=lambda x: '%10.2f' % x)
+
+
+def draw_nations(df, country_name_field, country_names, fields, normalize=False, overlap=False):
+    fname = 'draw_nations'
+    app.logger.debug(fname)
+    
+    #allowed = set(list(FIELDS.keys()))
+    #if set(fields) - allowed:                          # some fields aren't allowed
+    #    notallowed = set(fields)-allowed
+    #    raise ValueError(_('%(function)s: these fields are not allowed: %(notallowed)s', function=fname, notallowed=notallowed))
+    #
+    ## adding d2cases_dt2
+    #if 'd²cases_dt²' in fields:
+    #    df['d²cases_dt²'] = df['cases'] - df['cases'].shift(-1)
+    #
+    #if type(normalize) is not type(True):
+    #    raise ValueError(_('%(function)s: on parameter <normalize>', function=fname))
+    #
+    #if ( type(overlap) is not type(True)
+    #     or (overlap and len(fields)>1)
+    #   ):
+    #    raise ValueError(_('%(function)s: on parameter <overlap>', function=fname))
+    #
+    #    
+    #sdf = df[(df[country_name_field].isin(country_names))]                # selected dataframe
+    #
+    ## building a dataframe with the necessary data
+    #edf = pd.DataFrame()                                                  # empty dataframe
+    #
+    ## temporary series to build dates; here as str 'yyyy-mm-dd'
+    #stemp = (sdf['year'].apply(lambda x:"{:04d}-".format(x)) +
+    #                  sdf['month'].apply(lambda x:"{:02d}-".format(x)) +
+    #                  sdf['day'].apply(lambda x:"{:02d}".format(x))
+    #                 )
+    #
+    #edf['dateRep'] = stemp.map(lambda x: datetime.strptime(x, '%Y-%m-%d').date()) # date from str to date
+    #
+    #for field in fields:                                                  # adding fields cases&|deaths
+    #    edf[field]  = sdf[field]
+    #    
+    #edf[country_name_field] = sdf[country_name_field]                     # adding names of countries|continents
+    
+    # build the target dataframe (only wantend fields and nations)
+    edf = prepare_target(df, country_name_field, country_names, fields, normalize=False, overlap=False)
+    fields = fields.split('-')                         # list of fields to plot
+    
     edf = edf.groupby(['dateRep', country_name_field]).sum()
     
     if not overlap:
@@ -433,7 +486,6 @@ def draw_nations(df, country_name_field, country_names, fields, normalize=False,
     if sdf1 is None:
         raise ValueError(_('%(function)s: got an empty dataframe from pivot', function=fname))
     
-    #breakpoint()        #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     #sdf1 = sdf1.cumsum()
     tmpfields = fields[:]
     if 'd²cases_dt²' in fields:
