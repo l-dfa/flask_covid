@@ -202,7 +202,7 @@ def select():
         #contest = 'nations'
         #ids = 'EU'
         #contest = 'continents'
-        #ids = 'North_America'
+        #ids = 'Europe-America'
         
         return redirect(url_for('draw_graph', 
                                 contest=contest, 
@@ -277,14 +277,6 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
     
     #   country_names: getting names from ids
     if contest=='nations':                             # +- ldfa,2020-05-11 added nations from AREAS
-        #breakpoint()                                              # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        #country_names = []
-        #for country in countries:
-        #    if nations.get_nation_name(country):
-        #        n = nations.get_nation_name(country)
-        #    else:
-        #        n = areas_get_nation_name(country, contest, AREAS)
-        #    country_names.append(n)
         country_names = [ nations.get_nation_name(country) if nations.get_nation_name(country) is not None else areas_get_nation_name(country, contest, AREAS)  for country in countries]
     else:
         country_names = countries         # in case of continents, country_names and identifiers are equals
@@ -366,6 +358,7 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
 
 def prepare_target(df, country_name_field, country_names, fields, normalize=False, overlap=False):
     '''prepare target dataframe: check arguments and build a very specialized dataframe
+    composed only by wanted nations and fields
     '''
     fname = 'prepare_target'
     app.logger.debug(fname)
@@ -407,69 +400,42 @@ def prepare_target(df, country_name_field, country_names, fields, normalize=Fals
         
     target[country_name_field] = sdf[country_name_field]                     # adding names of countries|continents
     
+    # + ldfa,2020-05-17 fix bug #3
+    if country_name_field=='continentExp':
+        target = target.groupby(['dateRep', 'continentExp']).sum()
+        target = target.reset_index()
+    
     return target.copy()
 
 # + ldfa,2020-05-17 to show a summary table of chosen observations
 def table_nations(df, country_name_field, country_names, fields, normalize=False, overlap=False):
     '''summary table of chosen observations
+    
+    remarks: summary is by converting daily data to mean onto week data
     '''
     fname = 'table_nations'
     app.logger.debug(fname)
     
+    # get specialized dataframe: only request fields and nations|continents
     edf = prepare_target(df, country_name_field, country_names, fields, normalize=False, overlap=False)
     fields = fields.split('-')                         # list of fields to manage
     
+    # now we need to translate daily dates to to weeks
     edf['dateRep'] = pd.to_datetime(edf['dateRep'])
     edf['week'] = edf['dateRep'].dt.week    # adding week number
     edf['year'] = edf['dateRep'].dt.year    # adding year
-    #edf = edf.set_index(['year', 'week'])
-    edf = edf.rename(columns=FIELDS_IN_TABLE)
+    edf = edf.rename(columns=FIELDS_IN_TABLE)    # renaming columns to avoid confusioni with names in graph
     edf_avg = edf.groupby(['year','week',country_name_field]).mean()
-    for field in fields:
-        edf_avg
+    
     sdf1 = pd.pivot_table(edf_avg, index=['year','week'],columns=country_name_field)
     return sdf1.to_html(buf=None, float_format=lambda x: '%10.2f' % x)
 
 
 def draw_nations(df, country_name_field, country_names, fields, normalize=False, overlap=False):
+    '''prepare data to draw chosen observations and make it
+    '''
     fname = 'draw_nations'
     app.logger.debug(fname)
-    
-    #allowed = set(list(FIELDS.keys()))
-    #if set(fields) - allowed:                          # some fields aren't allowed
-    #    notallowed = set(fields)-allowed
-    #    raise ValueError(_('%(function)s: these fields are not allowed: %(notallowed)s', function=fname, notallowed=notallowed))
-    #
-    ## adding d2cases_dt2
-    #if 'd²cases_dt²' in fields:
-    #    df['d²cases_dt²'] = df['cases'] - df['cases'].shift(-1)
-    #
-    #if type(normalize) is not type(True):
-    #    raise ValueError(_('%(function)s: on parameter <normalize>', function=fname))
-    #
-    #if ( type(overlap) is not type(True)
-    #     or (overlap and len(fields)>1)
-    #   ):
-    #    raise ValueError(_('%(function)s: on parameter <overlap>', function=fname))
-    #
-    #    
-    #sdf = df[(df[country_name_field].isin(country_names))]                # selected dataframe
-    #
-    ## building a dataframe with the necessary data
-    #edf = pd.DataFrame()                                                  # empty dataframe
-    #
-    ## temporary series to build dates; here as str 'yyyy-mm-dd'
-    #stemp = (sdf['year'].apply(lambda x:"{:04d}-".format(x)) +
-    #                  sdf['month'].apply(lambda x:"{:02d}-".format(x)) +
-    #                  sdf['day'].apply(lambda x:"{:02d}".format(x))
-    #                 )
-    #
-    #edf['dateRep'] = stemp.map(lambda x: datetime.strptime(x, '%Y-%m-%d').date()) # date from str to date
-    #
-    #for field in fields:                                                  # adding fields cases&|deaths
-    #    edf[field]  = sdf[field]
-    #    
-    #edf[country_name_field] = sdf[country_name_field]                     # adding names of countries|continents
     
     # build the target dataframe (only wantend fields and nations)
     edf = prepare_target(df, country_name_field, country_names, fields, normalize=False, overlap=False)
