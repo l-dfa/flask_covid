@@ -85,14 +85,25 @@
                         </div>
                     </div>
                 {% endif %}
+                {% if html_table_last_values %}
+                    <div>
+                        <p></p>
+                        <h5>{{ _('Table of data on last day') }}.</h5>
+                        <p> {{ _('Hereafter the values of data on last day drawn in the former graph') }}.<br>
+                        </p>
+                        <p></p>
+                        {{ html_table_last_values|safe }}
+                    </div>
+                {% endif %}
                 {% if html_table %}
                     <div>
+                        <p></p>
                         <h5>{{ _('Summary table of data used to build chosen observations to draw') }}.</h5>
                         <p> {{ _('Hereafter a synthesis of data used to build the former graph') }}.<br>
                             {{ _('Specifically, we use daily positive cases to build cumulative positive cases') }},
                             {{ _('and daily deaths to build cumulative deaths') }}.<br>
                             {{ _('To summarize data, available days are bound in weeks') }}.
-                            {{ _('In every week figures are calculated as a mean') }}.<br>
+                            {{ _('Daily figures are calculated as a mean over the week') }}.<br>
                         </p>
                         <p></p>
                         {{ html_table|safe }}

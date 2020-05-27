@@ -45,26 +45,32 @@
             </div>
             
             <hr>
+
+            <p>
+                <a data-toggle="collapse" href="#history"> <span style="border: 1px solid; border-radius: 5px;"> {{ _('click here') }} </span></a> &nbsp;
+                {{ _('to show/hide history of this section') }}
+            </p>
             
-            <h5>{{ _('History') }}</h5>
-            <div>
+            <div class="collapse" id="history">
                 <dl>
-                <dt>ver.06</dt>
-                <dd>- {{_('added a summary table of data used to build chosen observations to draw') }}</dd>
-                
-                <dt>ver.05</dt>
-                <dd>- {{_('added European Union in nations') }}</dd>
-                <dd>- {{_('added South, Central and North America sub continents') }}</dd>
-                <dt>ver.04</dt>
-                <dd>- {{_('added the second derivative of total positive cases to show the curve concavity') }}</dd>
-                <dd>- {{_('a better user interface to select nations') }}</dd>
-                <dt>ver.03</dt>
-                <dd>- {{_('added the comparison between continents') }}</dd>
-                <dt>ver.02</dt>
-                <dd>- {{_('user can choose what infos to plot: positive cases and/or deaths') }}</dd>
-                </dl>
-            </div>   
-            
+                    <dt>ver.07</dt>
+                    <dd>- {{_('added a table of data values on the last day in the picture') }}</dd>
+                    <dt>ver.06</dt>
+                    <dd>- {{_('added a summary table of data used to build chosen observations to draw') }}</dd>
+                    
+                    <dt>ver.05</dt>
+                    <dd>- {{_('added European Union in nations') }}</dd>
+                    <dd>- {{_('added South, Central and North America sub continents') }}</dd>
+                    <dt>ver.04</dt>
+                    <dd>- {{_('added the second derivative of total positive cases to show the curve concavity') }}</dd>
+                    <dd>- {{_('a better user interface to select nations') }}</dd>
+                    <dt>ver.03</dt>
+                    <dd>- {{_('added the comparison between continents') }}</dd>
+                    <dt>ver.02</dt>
+                    <dd>- {{_('user can choose what infos to plot: positive cases and/or deaths') }}</dd>
+                </dl>                
+            </div>
+
         </div>
         
     </div>

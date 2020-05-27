@@ -337,6 +337,7 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
 
     img_data, threshold = draw_nations(df, country_name_field, country_names, fields, normalize=normalize, overlap=overlap)
     html_table = table_nations(df, country_name_field, country_names, fields, normalize=normalize, overlap=overlap)
+    html_table_last_values = table_last_values(df, country_name_field, country_names, fields, normalize=normalize, overlap=overlap)
     
     title = _('overlap') if overlap else _('plot')
     kwargs['overlap'] = False if overlap else True    # ready to switch from overlap to not overlap, and vice versa
@@ -352,6 +353,7 @@ def draw_graph(contest, ids, fields='cases', normalize=False, overlap=False):
                            overlap=overlap,
                            threshold=threshold,
                            img_data = img_data,
+                           html_table_last_values=html_table_last_values,
                            html_table=html_table,
                            kwargs=kwargs,
                           )
@@ -428,6 +430,30 @@ def table_nations(df, country_name_field, country_names, fields, normalize=False
     edf_avg = edf.groupby(['year','week',country_name_field]).mean()
     
     sdf1 = pd.pivot_table(edf_avg, index=['year','week'],columns=country_name_field)
+    return sdf1.to_html(buf=None, float_format=lambda x: '%10.2f' % x)
+
+
+# + ldfa,2020-05-27 to show values of observations on last day
+def table_last_values(df, country_name_field, country_names, fields, normalize=False, overlap=False):
+    ''' show figures of last day about chosen observations
+    '''
+    fname = 'table_last_values'
+    app.logger.debug(fname)
+    
+    # get specialized dataframe: only request fields and nations|continents
+    edf = prepare_target(df, country_name_field, country_names, fields, normalize=False, overlap=False)
+    fields = fields.split('-')                         # list of fields to manage
+    
+    edf = edf.groupby(['dateRep', country_name_field]).sum()
+    sdf1 = pd.pivot_table(edf, index='dateRep',columns=country_name_field)
+    if sdf1 is None:
+        raise ValueError(_('%(function)s: got an empty dataframe from pivot', function=fname))
+    tmpfields = fields[:]
+    if 'd²cases_dt²' in fields:
+        tmpfields.remove('d²cases_dt²')
+    for field in tmpfields:
+        sdf1[field] = sdf1[field].cumsum()
+    sdf1 = sdf1.iloc[-1:]
     return sdf1.to_html(buf=None, float_format=lambda x: '%10.2f' % x)
 
 
